@@ -119,42 +119,42 @@ func (f *typedParamFormatter) format(v reflect.Value) string {
 
 func (f *typedParamFormatter) strFormat(v reflect.Value) string {
 	if f.strFormatFunc == nil {
-		return fmt.Sprintf("%v", v)
+		return f.customFormat(v)
 	}
 	return f.strFormatFunc(v)
 }
 
 func (f *typedParamFormatter) numFormat(v reflect.Value) string {
 	if f.numFormatFunc == nil {
-		return fmt.Sprintf("%v", v.Interface())
+		return f.customFormat(v)
 	}
 	return f.numFormatFunc(v)
 }
 
 func (f *typedParamFormatter) boolFormat(v reflect.Value) string {
 	if f.boolFormatFunc == nil {
-		return fmt.Sprintf("%v", v.Interface())
+		return f.customFormat(v)
 	}
 	return f.boolFormatFunc(v)
 }
 
 func (f *typedParamFormatter) sliceFormat(v reflect.Value) string {
 	if f.sliceFormatFunc == nil {
-		return fmt.Sprintf("%v", v.Interface())
+		return f.customFormat(v)
 	}
 	return f.sliceFormatFunc(v)
 }
 
 func (f *typedParamFormatter) mapFormat(v reflect.Value) string {
 	if f.mapFormatFunc == nil {
-		return fmt.Sprintf("%v", v.Interface())
+		return f.customFormat(v)
 	}
 	return f.mapFormatFunc(v)
 }
 
 func (f *typedParamFormatter) structFormat(v reflect.Value) string {
 	if f.structFormatFunc == nil {
-		return fmt.Sprintf("%v", v.Interface())
+		return f.customFormat(v)
 	}
 	return f.structFormatFunc(v)
 }
