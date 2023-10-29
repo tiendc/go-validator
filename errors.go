@@ -182,6 +182,9 @@ func (e *errorImpl) ParamFormatter() ErrorParamFormatter {
 }
 
 func (e *errorImpl) TypedParamFormatter() TypedParamFormatter {
+	if e.paramsFormatter == nil {
+		return nil
+	}
 	return e.paramsFormatter.(TypedParamFormatter) // nolint: forcetypeassert
 }
 
