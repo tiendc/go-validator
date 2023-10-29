@@ -178,7 +178,8 @@ func Test_IsJSON(t *testing.T) {
 }
 
 func Test_IsMultibyte(t *testing.T) {
-
+	assert.True(t, gofn.Head(IsMultibyte("Chào buổi sáng")))
+	assert.False(t, gofn.Head(IsMultibyte("abc 123")))
 }
 
 func Test_IsASCII(t *testing.T) {
