@@ -184,9 +184,22 @@ func NewTypedParamFormatter() TypedParamFormatter {
 // For example: '12345' -> '12,345', '12345.6789' -> '12,345.6789'
 // To attach this formatter to Error object:
 //   - err.TypedParamFormatter().SetNumFormatFunc(NewDecimalNumFormatFunc())
-func NewDecimalNumFormatFunc() FormatFunc {
+//   - err.TypedParamFormatter().SetNumFormatFunc(NewDecimalNumFormatFunc("%.5f"))
+func NewDecimalNumFormatFunc(floatFmt ...string) FormatFunc {
 	return func(v reflect.Value) string {
-		return gofn.NumberFmtGroup(fmt.Sprintf("%v", v.Interface()), '.', ',')
+		var s string
+		// nolint: exhaustive
+		switch v.Kind() {
+		case reflect.Float64, reflect.Float32:
+			fmtStr := "%f"
+			if len(floatFmt) > 0 {
+				fmtStr = floatFmt[len(floatFmt)-1]
+			}
+			s = fmt.Sprintf(fmtStr, v.Interface())
+		default:
+			s = fmt.Sprintf("%v", v.Interface())
+		}
+		return gofn.NumberFmtGroup(s, '.', ',')
 	}
 }
 
