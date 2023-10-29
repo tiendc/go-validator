@@ -41,24 +41,6 @@ func (v *singleValidator) OnError(mods ...ErrorMod) SingleValidator {
 	return v
 }
 
-type MultiValidator interface {
-	Validator
-}
-
-func NewMultiValidator(execFn func() Errors) MultiValidator {
-	return &multiValidator{
-		execFn: execFn,
-	}
-}
-
-type multiValidator struct {
-	execFn func() Errors
-}
-
-func (v *multiValidator) Exec() Errors {
-	return v.execFn()
-}
-
 // CondValidator validator runs on specified a condition
 type CondValidator interface {
 	Validator
