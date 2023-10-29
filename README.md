@@ -60,6 +60,22 @@ go get github.com/tiendc/go-validator
             NumEQ(&p.Salary, 0),
             StrEQ(&p.WorkEmail, ""),
         ),
+
+        // OTHERS
+        // Pass if at least one of the validations passes
+        OneOf(
+            // List of validations
+        ),
+
+        // Pass if exact one of the validations passes
+        ExactOneOf(
+            // List of validations
+        ),
+
+        // Pass if none of the validations passes
+        NotOf(
+            // List of validations
+        ),
     )
 
     for _, e := range errs {
@@ -67,10 +83,6 @@ go get github.com/tiendc/go-validator
         fmt.Printf("%+v\n", detail)
     }
 ```
-
-## Usage
-
-    TBD
 
 ## Contributing
 
