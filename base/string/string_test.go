@@ -1,6 +1,7 @@
 package stringvalidation
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -41,4 +42,12 @@ func Test_NotIn(t *testing.T) {
 	assert.True(t, gofn.Head(NotIn("", "aBc", "123")))
 	assert.False(t, gofn.Head(NotIn("abc", "abc", "123", "")))
 	assert.False(t, gofn.Head(NotIn("", "aBc", "123", "")))
+}
+
+func Test_Match(t *testing.T) {
+	re := regexp.MustCompile("[0-9]+")
+	assert.True(t, gofn.Head(RuneMatch("1234", re)))
+	assert.False(t, gofn.Head(RuneMatch("abc", re)))
+	assert.True(t, gofn.Head(ByteMatch("1234", re)))
+	assert.False(t, gofn.Head(ByteMatch("abc", re)))
 }

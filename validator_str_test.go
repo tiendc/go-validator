@@ -144,7 +144,10 @@ func Test_StrIs_Functions(t *testing.T) {
 	assert.Equal(t, 0, len(StrIsISBN(gofn.New("978-3-16-148410-0")).Exec()))
 
 	assert.Equal(t, 0, len(StrIsJSON(gofn.New("123")).Exec()))
-	assert.Equal(t, "is_json", StrIsJSON(gofn.New("{\"k\":v}")).Exec()[0].Type())
+	assert.Equal(t, "is_json", StrIsJSON(gofn.New(`{"k":v}`)).Exec()[0].Type())
+
+	assert.Equal(t, 0, len(StrIsMultibyte(gofn.New("Chào buổi sáng")).Exec()))
+	assert.Equal(t, "is_multibyte", StrIsMultibyte(gofn.New("abc 123")).Exec()[0].Type())
 
 	assert.Equal(t, 0, len(StrIsASCII(gofn.New("hello")).Exec()))
 	assert.Equal(t, "is_ascii", StrIsASCII(gofn.New("hello Tiến")).Exec()[0].Type())

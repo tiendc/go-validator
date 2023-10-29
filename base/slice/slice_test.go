@@ -12,7 +12,10 @@ func Test_EQ(t *testing.T) {
 	assert.True(t, gofn.Head(EQ([]int{}, []int{})))
 	assert.True(t, gofn.Head(EQ([]int{1, 2}, []int{1, 2})))
 
-	ok, params := EQ([]int{1, 2}, []int{1, 3})
+	ok, params := EQ([]int{1, 2}, []int{1, 2, 3})
+	assert.False(t, ok)
+	assert.Nil(t, params)
+	ok, params = EQ([]int{1, 2}, []int{1, 3})
 	assert.False(t, ok)
 	assert.True(t, params[0].Key == kItemValue && params[0].Value == 2 &&
 		params[1].Key == kItemIndex && params[1].Value == 1)
