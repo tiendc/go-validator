@@ -25,6 +25,17 @@ func Test_TypedParamFormatter(t *testing.T) {
 	assert.Equal(t, "{111 222}", formatter.Format("", S{I: 111, U: 222}))
 
 	jsonFormatFunc := NewJSONFormatFunc()
+	// Use custom format function only
+	formatter.SetCustomFormatFunc(jsonFormatFunc)
+
+	assert.Equal(t, "123", formatter.Format("", 123))
+	assert.Equal(t, `"abc"`, formatter.Format("", "abc"))
+	assert.Equal(t, "true", formatter.Format("", true))
+	assert.Equal(t, `"abc"`, formatter.Format("", gofn.New("abc")))
+	assert.Equal(t, `["abc",123]`, formatter.Format("", []any{"abc", 123}))
+	v := formatter.Format("", map[int]any{1: "abc", 2: 123})
+	assert.True(t, v == `{"1":"abc","2":123}` || v == `{"2":123,"1":"abc"}`)
+
 	formatter.SetNumFormatFunc(jsonFormatFunc)
 	formatter.SetStrFormatFunc(jsonFormatFunc)
 	formatter.SetBoolFormatFunc(jsonFormatFunc)
@@ -39,7 +50,7 @@ func Test_TypedParamFormatter(t *testing.T) {
 	assert.Equal(t, "true", formatter.Format("", true))
 	assert.Equal(t, `"abc"`, formatter.Format("", gofn.New("abc")))
 	assert.Equal(t, `["abc",123]`, formatter.Format("", []any{"abc", 123}))
-	v := formatter.Format("", map[int]any{1: "abc", 2: 123})
+	v = formatter.Format("", map[int]any{1: "abc", 2: 123})
 	assert.True(t, v == `{"1":"abc","2":123}` || v == `{"2":123,"1":"abc"}`)
 }
 
