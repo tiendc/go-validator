@@ -292,15 +292,15 @@ func errorBuildParams(e Error, formatter ErrorParamFormatter) (params ErrorParam
 	params["Type"] = &errorParamFormatter{k: "Type", v: e.Type(), formatter: formatter}
 	params["Value"] = &errorParamFormatter{k: "Value", v: e.Value(), formatter: formatter}
 	params["ValueType"] = &errorParamFormatter{k: "ValueType", v: e.ValueType(), formatter: formatter}
-	ctx := e.Field()
-	if ctx != nil {
-		params["Field"] = &errorParamFormatter{k: "Type", v: ctx.Name, formatter: formatter}
-		params["FieldPath"] = &errorParamFormatter{k: "Type",
-			v: ctx.PathString(false, "."), formatter: formatter}
+	field := e.Field()
+	if field != nil {
+		params["Field"] = &errorParamFormatter{k: "Field", v: field.Name, formatter: formatter}
+		params["FieldPath"] = &errorParamFormatter{k: "FieldPath",
+			v: field.PathString(false, "."), formatter: formatter}
 	} else {
 		err = ErrFieldMissing
-		params["Field"] = &errorParamFormatter{k: "Type", v: "field", formatter: formatter}
-		params["FieldPath"] = &errorParamFormatter{k: "Type", v: "field", formatter: formatter}
+		params["Field"] = &errorParamFormatter{k: "Field", v: "", formatter: formatter}
+		params["FieldPath"] = &errorParamFormatter{k: "FieldPath", v: "", formatter: formatter}
 	}
 	for k, v := range e.Params() {
 		params[k] = &errorParamFormatter{k: k, v: v, formatter: formatter}
