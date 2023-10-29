@@ -469,5 +469,5 @@ func Test_IsISO4217(t *testing.T) {
 
 func Test_IsE164(t *testing.T) {
 	assert.True(t, gofn.Head(IsE164("+442071838750")))
-	assert.False(t, gofn.Head(IsISO4217("442071838750")))
+	assert.False(t, gofn.Head(IsE164("abc123")))
 }

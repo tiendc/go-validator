@@ -27,22 +27,23 @@ func Test_TypedParamFormatter(t *testing.T) {
 
 func Test_NewJSONFormatFunc(t *testing.T) {
 	fmtFunc := NewJSONFormatFunc()
-	assert.Equal(t, "\"abc\"", fmtFunc(reflect.ValueOf("abc")))
+	assert.Equal(t, `"abc"`, fmtFunc(reflect.ValueOf("abc")))
 	assert.Equal(t, "123", fmtFunc(reflect.ValueOf(123)))
-	assert.Equal(t, "[\"abc\",123]", fmtFunc(reflect.ValueOf([]any{"abc", 123})))
-	assert.Equal(t, "{\"1\":\"abc\",\"2\":123}", fmtFunc(reflect.ValueOf(map[int]any{1: "abc", 2: 123})))
+	assert.Equal(t, `["abc",123]`, fmtFunc(reflect.ValueOf([]any{"abc", 123})))
+	assert.Equal(t, `{"1":"abc","2":123}`, fmtFunc(reflect.ValueOf(map[int]any{1: "abc", 2: 123})))
 }
 
 func Test_NewSliceFormatFunc(t *testing.T) {
 	itemFmtFunc := NewJSONFormatFunc()
 	fmtFunc := NewSliceFormatFunc(itemFmtFunc, "[", "]", ",")
-	assert.Equal(t, "[\"abc\",123]", fmtFunc(reflect.ValueOf([]any{"abc", 123})))
+	assert.Equal(t, `["abc",123]`, fmtFunc(reflect.ValueOf([]any{"abc", 123})))
 }
 
 func Test_NewMapFormatFunc(t *testing.T) {
 	kvFmtFunc := NewJSONFormatFunc()
 	fmtFunc := NewMapFormatFunc(kvFmtFunc, kvFmtFunc, "{", "}", ":", ",")
-	assert.Equal(t, "{1:\"abc\",2:123}", fmtFunc(reflect.ValueOf(map[int]any{1: "abc", 2: 123})))
+	v := fmtFunc(reflect.ValueOf(map[int]any{1: "abc", 2: 123}))
+	assert.True(t, v == `{1:"abc",2:123}` || v == `{2:123,1:"abc"}`)
 }
 
 func Test_NewDecimalNumFormatFunc(t *testing.T) {
