@@ -1,6 +1,7 @@
 package validation
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -24,10 +25,11 @@ func Test_StrByteLen(t *testing.T) {
 }
 
 func Test_StrEQ(t *testing.T) {
-	errs := NumEQ(gofn.New(10), 10).Exec()
+	errs := StrEQ(gofn.New("abc"), "abc").Exec()
 	assert.Equal(t, 0, len(errs))
-	errs = NumEQ(gofn.New(10), 9).Exec()
-	assert.Equal(t, 1, len(errs))
+
+	errs = StrEQ(gofn.New("abc"), "aBc").Exec()
+	assert.Equal(t, "eq", errs[0].Type())
 }
 
 func Test_StrIn(t *testing.T) {
@@ -44,6 +46,24 @@ func Test_StrNotIn(t *testing.T) {
 
 	errs = StrNotIn(gofn.New("a"), "", "a", "b").Exec()
 	assert.Equal(t, "not_in", errs[0].Type())
+}
+
+func Test_StrMatch(t *testing.T) {
+	re := regexp.MustCompile("[0-9]+")
+	errs := StrMatch(gofn.New("123"), re).Exec()
+	assert.Equal(t, 0, len(errs))
+
+	errs = StrMatch(gofn.New("abc"), re).Exec()
+	assert.Equal(t, "match", errs[0].Type())
+}
+
+func Test_StrByteMatch(t *testing.T) {
+	re := regexp.MustCompile("[0-9]+")
+	errs := StrByteMatch(gofn.New("123"), re).Exec()
+	assert.Equal(t, 0, len(errs))
+
+	errs = StrByteMatch(gofn.New("abc"), re).Exec()
+	assert.Equal(t, "byte_match", errs[0].Type())
 }
 
 // nolint: lll
