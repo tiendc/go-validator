@@ -69,3 +69,11 @@ func Test_Error_Impl(t *testing.T) {
 	var errs Errors
 	assert.Equal(t, errs, err.UnwrapAsErrors())
 }
+
+func Test_Errors(t *testing.T) {
+	errs := Errors{
+		NewError().SetTemplate("template_1"),
+		NewError().SetTemplate("template_2"),
+	}
+	assert.Equal(t, "template_1\ntemplate_2", errs.Error())
+}
