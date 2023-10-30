@@ -248,14 +248,14 @@ func (e Errors) Error() string {
 	if len(e) == 0 {
 		return ""
 	}
-	errStr := ""
+	var sb strings.Builder
 	for i, err := range e {
 		if i > 0 {
-			errStr += "\n"
+			sb.WriteString("\n")
 		}
-		errStr += err.Error()
+		sb.WriteString(err.Error())
 	}
-	return errStr
+	return sb.String()
 }
 
 func SetField(name string, parent *Field) ErrorMod {
