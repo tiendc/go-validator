@@ -27,13 +27,15 @@ func OneOf(validators ...Validator) SingleValidator {
 		if len(validators) == 0 {
 			return nil
 		}
+		wrapErrs := Errors{}
 		for _, v := range validators {
 			errs := v.Exec()
 			if len(errs) == 0 {
 				return nil // return nil when one passes
 			}
+			wrapErrs = append(wrapErrs, errs...)
 		}
-		return errorBuild("one_of", "", nil, nil)
+		return errorBuild("one_of", "", nil, wrapErrs)
 	})
 }
 
@@ -42,10 +44,13 @@ func OneOf(validators ...Validator) SingleValidator {
 func ExactOneOf(validators ...Validator) SingleValidator {
 	return NewSingleValidator(func() Error {
 		numValidatorPass := 0
+		wrapErrs := Errors{}
 		for _, v := range validators {
 			errs := v.Exec()
 			if len(errs) == 0 {
 				numValidatorPass++
+			} else {
+				wrapErrs = append(wrapErrs, errs...)
 			}
 			if numValidatorPass > 1 {
 				break
@@ -54,7 +59,7 @@ func ExactOneOf(validators ...Validator) SingleValidator {
 		if numValidatorPass == 1 {
 			return nil
 		}
-		return errorBuild("exact_one_of", "", nil, nil)
+		return errorBuild("exact_one_of", "", nil, wrapErrs)
 	})
 }
 
