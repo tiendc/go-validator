@@ -9,6 +9,7 @@ import (
 	"text/template"
 
 	"github.com/hashicorp/go-multierror"
+	"github.com/iancoleman/strcase"
 	"github.com/tiendc/gofn"
 )
 
@@ -286,24 +287,55 @@ func errorBuildDetail(e Error) (detail string, retErr error) {
 	return
 }
 
-// errorBuildParams builds params of error
+// errorBuildParams builds params of error with inner errors' params handled
 func errorBuildParams(e Error, formatter ErrorParamFormatter) (params ErrorParams, err error) {
 	params = make(ErrorParams, 10) // nolint: gomnd
-	params["Type"] = &errorParamFormatter{k: "Type", v: e.Type(), formatter: formatter}
-	params["Value"] = &errorParamFormatter{k: "Value", v: e.Value(), formatter: formatter}
-	params["ValueType"] = &errorParamFormatter{k: "ValueType", v: e.ValueType(), formatter: formatter}
+
+	// If there are inner errors, collect all params of them
+	for _, inErr := range e.UnwrapAsErrors() {
+		prefix := strcase.ToCamel(inErr.Type())
+		if prefix != "" {
+			prefix += "_"
+		}
+		pErr := singleErrorBuildParams(inErr, inErr.ParamFormatter(), prefix, params)
+		if pErr != nil {
+			err = multierror.Append(err, pErr)
+		}
+	}
+
+	// Build params for the current error
+	pErr := singleErrorBuildParams(e, formatter, "", params)
+	if pErr != nil {
+		err = multierror.Append(err, pErr)
+	}
+
+	return params, err
+}
+
+// singleErrorBuildParams build params for the specific error
+func singleErrorBuildParams(e Error, formatter ErrorParamFormatter, prefix string, params ErrorParams) (err error) {
+	key := prefix + "Type"
+	params[key] = &errorParamFormatter{k: key, v: e.Type(), formatter: formatter}
+	key = prefix + "Value"
+	params[key] = &errorParamFormatter{k: key, v: e.Value(), formatter: formatter}
+	key = prefix + "ValueType"
+	params[key] = &errorParamFormatter{k: key, v: e.ValueType(), formatter: formatter}
 	field := e.Field()
 	if field != nil {
-		params["Field"] = &errorParamFormatter{k: "Field", v: field.Name, formatter: formatter}
-		params["FieldPath"] = &errorParamFormatter{k: "FieldPath",
-			v: field.PathString(false, "."), formatter: formatter}
+		key = prefix + "Field"
+		params[key] = &errorParamFormatter{k: key, v: field.Name, formatter: formatter}
+		key = prefix + "FieldPath"
+		params[key] = &errorParamFormatter{k: key, v: field.PathString(false, "."), formatter: formatter}
 	} else {
-		err = ErrFieldMissing
-		params["Field"] = &errorParamFormatter{k: "Field", v: "", formatter: formatter}
-		params["FieldPath"] = &errorParamFormatter{k: "FieldPath", v: "", formatter: formatter}
+		err = multierror.Append(err, ErrFieldMissing)
+		key = prefix + "Field"
+		params[key] = &errorParamFormatter{k: key, v: "", formatter: formatter}
+		key = prefix + "FieldPath"
+		params[key] = &errorParamFormatter{k: key, v: "", formatter: formatter}
 	}
 	for k, v := range e.Params() {
-		params[k] = &errorParamFormatter{k: k, v: v, formatter: formatter}
+		key = prefix + k
+		params[key] = &errorParamFormatter{k: key, v: v, formatter: formatter}
 	}
-	return params, err
+	return err
 }

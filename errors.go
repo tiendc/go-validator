@@ -4,6 +4,7 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/iancoleman/strcase"
 	"github.com/tiendc/gofn"
 )
 
@@ -166,7 +167,18 @@ func (e *errorImpl) SetTemplate(template string) Error {
 }
 
 func (e *errorImpl) Params() ErrorParams {
-	return e.params
+	params := gofn.MapUpdate(make(ErrorParams, len(e.params)), e.params)
+	// Collect all inner errors' params
+	for _, inErr := range e.wrappedErrors {
+		prefix := strcase.ToCamel(inErr.Type())
+		if prefix != "" {
+			prefix += "_"
+		}
+		for k, v := range inErr.Params() {
+			params[prefix+k] = v
+		}
+	}
+	return params
 }
 
 func (e *errorImpl) SetParam(key string, val any) Error {
