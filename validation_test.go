@@ -18,6 +18,13 @@ func Test_Group(t *testing.T) {
 		assert.Equal(t, 0, len(errs))
 	})
 
+	t.Run("success with empty input", func(t *testing.T) {
+		errs := Validate(
+			Group(),
+		)
+		assert.Equal(t, 0, len(errs))
+	})
+
 	t.Run("failure", func(t *testing.T) {
 		i := 10
 		errs := Validate(
@@ -43,6 +50,13 @@ func Test_OneOf(t *testing.T) {
 				NumGT(&i, 5),
 				NumLT(&i, 0),
 			),
+		)
+		assert.Equal(t, 0, len(errs))
+	})
+
+	t.Run("success with empty input", func(t *testing.T) {
+		errs := Validate(
+			OneOf(),
 		)
 		assert.Equal(t, 0, len(errs))
 	})
@@ -84,6 +98,14 @@ func Test_ExactOneOf(t *testing.T) {
 				NumGT(&i, 3),
 				NumLT(&i, 0),
 			),
+		)
+		assert.Equal(t, 1, len(errs))
+		assert.Equal(t, "exact_one_of", errs[0].Type())
+	})
+
+	t.Run("failure with empty input", func(t *testing.T) {
+		errs := Validate(
+			ExactOneOf(),
 		)
 		assert.Equal(t, 1, len(errs))
 		assert.Equal(t, "exact_one_of", errs[0].Type())
