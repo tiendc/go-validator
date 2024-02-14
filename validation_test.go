@@ -158,6 +158,25 @@ func Test_If(t *testing.T) {
 	})
 }
 
+func Test_Must(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		i := 10
+		errs := Validate(
+			Must(i == 10).OnError(SetCustomKey("i must be 10")),
+		)
+		assert.Equal(t, 0, len(errs))
+	})
+
+	t.Run("failure", func(t *testing.T) {
+		i := 11
+		errs := Validate(
+			Must(i == 10).OnError(SetCustomKey("i must be 10")),
+		)
+		assert.Equal(t, 1, len(errs))
+		assert.Equal(t, "must", errs[0].Type())
+	})
+}
+
 func Test_When(t *testing.T) {
 	t.Run("success then", func(t *testing.T) {
 		i1 := 1

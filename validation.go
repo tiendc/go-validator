@@ -79,12 +79,24 @@ func NotOf(validators ...Validator) SingleValidator {
 
 // If a bare check validation convenient for validating custom data such as
 // `If(myTime.After(dueDate)).OnError(vld.SetCustomKey("MY_ERR_KEY"))`
+// Deprecated: use `Must` instead
 func If(cond bool) SingleValidator {
 	return NewSingleValidator(func() Error {
 		if cond {
 			return nil
 		}
 		return errorBuild("if", "", cond, nil)
+	})
+}
+
+// Must a bare check validation convenient for validating custom data such as
+// `Must(myTime.After(dueDate)).OnError(vld.SetCustomKey("MY_ERR_KEY"))`
+func Must(cond bool) SingleValidator {
+	return NewSingleValidator(func() Error {
+		if cond {
+			return nil
+		}
+		return errorBuild("must", "", cond, nil)
 	})
 }
 

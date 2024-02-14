@@ -7,7 +7,8 @@ var (
 		"one_of":       `{{.Field}} must satisfy at least one of the specified validations`,
 		"exact_one_of": `{{.Field}} must satisfy exact one of the specified validations`,
 		"not_of":       `{{.Field}} must not satisfy any of the specified validations`,
-		"if":           `{{.Field}} must satisfy the specified condition`,
+		"if":           `{{.Field}} must satisfy the specified condition`, // deprecated: use `must`
+		"must":         `{{.Field}} must satisfy the specified condition`,
 		"nil":          `{{.Field}} must be nil`,
 		"not_nil":      `{{.Field}} must be not nil`,
 		"required":     `{{.Field}} is required`,

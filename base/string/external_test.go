@@ -274,6 +274,7 @@ func Test_IsSHA3256(t *testing.T) {
 		"fb61c8cb4f173e3a526761dd")))
 }
 
+// nolint: goconst
 func Test_IsSHA3384(t *testing.T) {
 	assert.True(t, gofn.Head(IsSHA3384("3d479bdfb2d870868fef4f8dd56941e741c1d9c306f5ab0e6918e5f26ee1a0237c97606ef"+
 		"b61c8cb4f173e3a526761dd")))
