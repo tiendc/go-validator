@@ -197,7 +197,8 @@ func (e *errorImpl) TypedParamFormatter() TypedParamFormatter {
 	if e.paramsFormatter == nil {
 		return nil
 	}
-	return e.paramsFormatter.(TypedParamFormatter) // nolint: forcetypeassert
+	typedFmt, _ := e.paramsFormatter.(TypedParamFormatter)
+	return typedFmt
 }
 
 func (e *errorImpl) SetParamFormatter(formatter ErrorParamFormatter) Error {
@@ -286,4 +287,60 @@ func SetParamFormatter(formatter ErrorParamFormatter) ErrorMod {
 	return func(err Error) {
 		_ = err.SetParamFormatter(formatter)
 	}
+}
+
+func SetNumParamFormatter(formatFunc FormatFunc) ErrorMod {
+	return func(err Error) {
+		getTypedParamFormatterOrPanic(err).SetNumFormatFunc(formatFunc)
+	}
+}
+
+func SetStrParamFormatter(formatFunc FormatFunc) ErrorMod {
+	return func(err Error) {
+		getTypedParamFormatterOrPanic(err).SetStrFormatFunc(formatFunc)
+	}
+}
+
+func SetBoolParamFormatter(formatFunc FormatFunc) ErrorMod {
+	return func(err Error) {
+		getTypedParamFormatterOrPanic(err).SetBoolFormatFunc(formatFunc)
+	}
+}
+
+func SetSliceParamFormatter(formatFunc FormatFunc) ErrorMod {
+	return func(err Error) {
+		getTypedParamFormatterOrPanic(err).SetSliceFormatFunc(formatFunc)
+	}
+}
+
+func SetMapParamFormatter(formatFunc FormatFunc) ErrorMod {
+	return func(err Error) {
+		getTypedParamFormatterOrPanic(err).SetMapFormatFunc(formatFunc)
+	}
+}
+
+func SetStructParamFormatter(formatFunc FormatFunc) ErrorMod {
+	return func(err Error) {
+		getTypedParamFormatterOrPanic(err).SetStructFormatFunc(formatFunc)
+	}
+}
+
+func SetPtrParamFormatter(formatFunc FormatFunc) ErrorMod {
+	return func(err Error) {
+		getTypedParamFormatterOrPanic(err).SetPtrFormatFunc(formatFunc)
+	}
+}
+
+func SetCustomParamFormatter(formatFunc FormatFunc) ErrorMod {
+	return func(err Error) {
+		getTypedParamFormatterOrPanic(err).SetCustomFormatFunc(formatFunc)
+	}
+}
+
+func getTypedParamFormatterOrPanic(err Error) TypedParamFormatter {
+	formatter := err.TypedParamFormatter()
+	if formatter == nil {
+		panic("error does not have a TypedParamFormatter attached")
+	}
+	return formatter
 }
