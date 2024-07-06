@@ -12,6 +12,7 @@ go get github.com/tiendc/go-validator
 
 ## Usage
 
+#### General usage
 ```go
     type Person struct {
         Name      string
@@ -81,6 +82,48 @@ go get github.com/tiendc/go-validator
     for _, e := range errs {
         detail, warnErr := e.BuildDetail()
         fmt.Printf("%+v\n", detail)
+    }
+```
+
+#### Error message localization
+
+- Method 1: inline localization (not recommended)
+```go
+    errs := Validate(
+        NumLTE(&p.Age, 40).OnError(
+            // Override the default template in english
+            SetTemplate("Tuổi nhân viên phải nhỏ hơn hoặc bằng {{.Max}}"),
+        ),
+    )
+
+    for _, e := range errs {
+        detail, warnErr := e.BuildDetail()
+        fmt.Printf("%+v\n", detail)
+    }
+```
+
+- Method 2: using another localization lib (recommended)
+```go
+    // Supposed you have 2 files defining error messages
+    // In `error_messages.en`:
+    // ERR_EMPLOYEE_AGE_TOO_BIG = "Employee {{.EmployeeName}} has age bigger than {{.Max}}"
+    // In `error_messages.vi`:
+    // ERR_EMPLOYEE_AGE_TOO_BIG = "Nhân viên {{.EmployeeName}} có tuổi lớn hơn {{.Max}}"
+
+    errs := Validate(
+        NumLTE(&p.Age, 40).OnError(
+            // Custom param (the default template doesn't have this one)
+            SetParam("EmployeeName", p.Name),
+            // Custom key to define custom template to use
+            SetCustomKey("ERR_EMPLOYEE_AGE_TOO_BIG"),
+        ),
+    )
+
+    for _, e := range errs {
+        errKey := e.CustomKey()
+        errParams : = e.Params() // or e.ParamsWithFormatter()
+        errorMsg := translationFunction(errKey, errParams) // You need to provide this function
+        fmt.Printf("%+v\n", errorMsg)
     }
 ```
 
