@@ -127,6 +127,27 @@ go get github.com/tiendc/go-validator
     }
 ```
 
+#### Custom error param formatter
+
+```go
+    errs := Validate(
+        NumLT(&p.Budget, 1000000).OnError(
+            SetField("Budget", nil),
+        ),
+    )
+
+    // e.BuildDetail() may produce message `Budget must be less than 1000000`,
+    // but you may want a message like: `Budget must be less than 1,000,000`.
+    // Let's use a custom formatter
+
+    errs := Validate(
+        NumLT(&p.Budget, 1000000).OnError(
+            SetField("Budget", nil),
+            SetNumParamFormatter(NewDecimalFormatFunc('.', ',', "%f")),
+        ),
+    )
+```
+
 ## Contributing
 
 - You are welcome to make pull requests for new functions and bug fixes.

@@ -84,6 +84,15 @@ func Test_NewDecimalNumFormatFunc(t *testing.T) {
 	assert.Equal(t, "1,234,567.12346", fmtFunc(reflect.ValueOf(1234567.1234567)))
 }
 
+func Test_NewDecimalFormatFunc(t *testing.T) {
+	fmtFunc := NewDecimalFormatFunc('.', ',', "")
+	assert.Equal(t, "12,345", fmtFunc(reflect.ValueOf(12345)))
+	assert.Equal(t, "1,234,567.123457", fmtFunc(reflect.ValueOf(1234567.1234567)))
+	fmtFunc = NewDecimalFormatFunc('.', ',', "%.5f")
+	assert.Equal(t, "12,345", fmtFunc(reflect.ValueOf(12345)))
+	assert.Equal(t, "1,234,567.12346", fmtFunc(reflect.ValueOf(1234567.1234567)))
+}
+
 func Test_errorBuildDetail(t *testing.T) {
 	err := NewError().
 		SetCustomKey("customKey").

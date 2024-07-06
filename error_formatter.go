@@ -177,8 +177,12 @@ func (f *typedParamFormatter) customFormat(v reflect.Value) string {
 	return f.customFormatFunc(v)
 }
 
-func NewTypedParamFormatter() TypedParamFormatter {
-	return &typedParamFormatter{}
+func NewTypedParamFormatter(options ...func(TypedParamFormatter)) TypedParamFormatter {
+	formatter := &typedParamFormatter{}
+	for _, opt := range options {
+		opt(formatter)
+	}
+	return formatter
 }
 
 // NewDecimalNumFormatFunc returns a FormatFunc which groups digits of decimal
@@ -186,6 +190,8 @@ func NewTypedParamFormatter() TypedParamFormatter {
 // To attach this formatter to Error object:
 //   - err.TypedParamFormatter().SetNumFormatFunc(NewDecimalNumFormatFunc())
 //   - err.TypedParamFormatter().SetNumFormatFunc(NewDecimalNumFormatFunc("%.5f"))
+//
+// Deprecated: use NewDecimalFormatFunc instead
 func NewDecimalNumFormatFunc(floatFmt ...string) FormatFunc {
 	return func(v reflect.Value) string {
 		var s string
@@ -201,6 +207,28 @@ func NewDecimalNumFormatFunc(floatFmt ...string) FormatFunc {
 			s = fmt.Sprintf("%v", v.Interface())
 		}
 		return gofn.NumberFmtGroup(s, '.', ',')
+	}
+}
+
+// NewDecimalFormatFunc returns a FormatFunc which can format and group digits of decimal or integer
+// For example: '12345' -> '12,345', '12345.6789' -> '12,345.6789'
+// To attach this formatter to Error object:
+//   - err.TypedParamFormatter().SetNumFormatFunc(NewDecimalFormatFunc('.', ',', "%.2f"))
+func NewDecimalFormatFunc(fractionSep, groupSep byte, floatFmt string) FormatFunc {
+	return func(v reflect.Value) string {
+		var s string
+		// nolint: exhaustive
+		switch v.Kind() {
+		case reflect.Float64, reflect.Float32:
+			fmtStr := floatFmt
+			if fmtStr == "" {
+				fmtStr = "%f"
+			}
+			s = fmt.Sprintf(fmtStr, v.Interface())
+		default:
+			s = fmt.Sprintf("%v", v.Interface())
+		}
+		return gofn.NumberFmtGroup(s, fractionSep, groupSep)
 	}
 }
 

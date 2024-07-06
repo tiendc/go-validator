@@ -1,9 +1,11 @@
 package validation
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/tiendc/gofn"
 )
 
 func Test_ErrorMod(t *testing.T) {
@@ -25,6 +27,26 @@ func Test_ErrorMod(t *testing.T) {
 	SetParamFormatter(nil)(err)
 	assert.Nil(t, err.ParamFormatter())
 	assert.Nil(t, err.TypedParamFormatter())
+	SetParamFormatter(NewTypedParamFormatter())(err)
+	assert.NotNil(t, err.ParamFormatter())
+	assert.NotNil(t, err.TypedParamFormatter())
+
+	SetNumParamFormatter(func(reflect.Value) string { return "num" })(err)
+	SetStrParamFormatter(func(reflect.Value) string { return "str" })(err)
+	SetBoolParamFormatter(func(reflect.Value) string { return "bool" })(err)
+	SetSliceParamFormatter(func(reflect.Value) string { return "slice" })(err)
+	SetMapParamFormatter(func(reflect.Value) string { return "map" })(err)
+	SetStructParamFormatter(func(reflect.Value) string { return "struct" })(err)
+	SetPtrParamFormatter(func(reflect.Value) string { return "ptr" })(err)
+	SetCustomParamFormatter(func(reflect.Value) string { return "custom" })(err)
+	assert.Equal(t, "num", err.TypedParamFormatter().Format("k", 123))
+	assert.Equal(t, "str", err.TypedParamFormatter().Format("k", "123"))
+	assert.Equal(t, "bool", err.TypedParamFormatter().Format("k", true))
+	assert.Equal(t, "slice", err.TypedParamFormatter().Format("k", []int{123}))
+	assert.Equal(t, "map", err.TypedParamFormatter().Format("k", map[string]any{}))
+	assert.Equal(t, "struct", err.TypedParamFormatter().Format("k", struct{}{}))
+	assert.Equal(t, "ptr", err.TypedParamFormatter().Format("k", gofn.New(123)))
+	assert.Equal(t, "custom", err.TypedParamFormatter().Format("k", func() {}))
 }
 
 func Test_Field_Path(t *testing.T) {
