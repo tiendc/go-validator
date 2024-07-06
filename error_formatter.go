@@ -177,12 +177,8 @@ func (f *typedParamFormatter) customFormat(v reflect.Value) string {
 	return f.customFormatFunc(v)
 }
 
-func NewTypedParamFormatter(options ...func(TypedParamFormatter)) TypedParamFormatter {
-	formatter := &typedParamFormatter{}
-	for _, opt := range options {
-		opt(formatter)
-	}
-	return formatter
+func NewTypedParamFormatter() TypedParamFormatter {
+	return &typedParamFormatter{}
 }
 
 // NewDecimalNumFormatFunc returns a FormatFunc which groups digits of decimal

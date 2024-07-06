@@ -47,6 +47,13 @@ func Test_ErrorMod(t *testing.T) {
 	assert.Equal(t, "struct", err.TypedParamFormatter().Format("k", struct{}{}))
 	assert.Equal(t, "ptr", err.TypedParamFormatter().Format("k", gofn.New(123)))
 	assert.Equal(t, "custom", err.TypedParamFormatter().Format("k", func() {}))
+
+	defer func() {
+		e := recover()
+		assert.Equal(t, "error does not have a TypedParamFormatter attached", e)
+	}()
+	SetParamFormatter(nil)(err)
+	SetNumParamFormatter(func(reflect.Value) string { return "num" })(err)
 }
 
 func Test_Field_Path(t *testing.T) {
