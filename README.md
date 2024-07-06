@@ -131,7 +131,7 @@ go get github.com/tiendc/go-validator
 
 ```go
     errs := Validate(
-        NumLT(&p.Budget, 1000000).OnError(
+        NumLT(&budget, 1000000).OnError(
             SetField("Budget", nil),
         ),
     )
@@ -141,7 +141,7 @@ go get github.com/tiendc/go-validator
     // Let's use a custom formatter
 
     errs := Validate(
-        NumLT(&p.Budget, 1000000).OnError(
+        NumLT(&budget, 1000000).OnError(
             SetField("Budget", nil),
             SetNumParamFormatter(NewDecimalFormatFunc('.', ',', "%f")),
         ),
