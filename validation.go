@@ -1,11 +1,11 @@
 package validation
 
-// Validate executes given validators to make result
+// Validate executes given validators to make result.
 func Validate(validators ...Validator) Errors {
 	return execValidators(validators, false)
 }
 
-// Group groups the given validators into one
+// Group groups the given validators into one.
 // In case there are errors, only one error will be returned.
 func Group(validators ...Validator) SingleValidator {
 	return NewSingleValidator(func() Error {
@@ -20,7 +20,7 @@ func Group(validators ...Validator) SingleValidator {
 	})
 }
 
-// OneOf checks if the target value satisfies one of the given validators
+// OneOf checks if the target value satisfies one of the given validators.
 // When a validator passes, the remaining ones will be skipped.
 func OneOf(validators ...Validator) SingleValidator {
 	return NewSingleValidator(func() Error {
@@ -39,7 +39,7 @@ func OneOf(validators ...Validator) SingleValidator {
 	})
 }
 
-// ExactOneOf checks if the target value satisfies only one of the given validators
+// ExactOneOf checks if the target value satisfies only one of the given validators.
 // This returns error when there is not one or more than one validator pass.
 func ExactOneOf(validators ...Validator) SingleValidator {
 	return NewSingleValidator(func() Error {
@@ -63,7 +63,7 @@ func ExactOneOf(validators ...Validator) SingleValidator {
 	})
 }
 
-// NotOf checks the target value not satisfy any of the given validators
+// NotOf checks the target value not satisfy any of the given validators.
 // When a validator passes, an error will be returned and the remaining checks will be skipped.
 func NotOf(validators ...Validator) SingleValidator {
 	return NewSingleValidator(func() Error {
@@ -78,7 +78,7 @@ func NotOf(validators ...Validator) SingleValidator {
 }
 
 // If a bare check validation convenient for validating custom data such as
-// `If(myTime.After(dueDate)).OnError(vld.SetCustomKey("MY_ERR_KEY"))`
+// `If(myTime.Before(dueDate)).OnError(vld.SetCustomKey("MY_ERR_KEY"))`.
 // Deprecated: use `Must` instead
 func If(cond bool) SingleValidator {
 	return NewSingleValidator(func() Error {
@@ -90,7 +90,7 @@ func If(cond bool) SingleValidator {
 }
 
 // Must a bare check validation convenient for validating custom data such as
-// `Must(myTime.After(dueDate)).OnError(vld.SetCustomKey("MY_ERR_KEY"))`
+// `Must(myTime.Before(dueDate)).OnError(vld.SetCustomKey("MY_ERR_KEY"))`.
 func Must(cond bool) SingleValidator {
 	return NewSingleValidator(func() Error {
 		if cond {

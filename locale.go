@@ -8,6 +8,7 @@ const (
 	langEn = "en"
 )
 
+// TemplateProvider interface for providing template for generating error messages
 type TemplateProvider interface {
 	Get(Error) string
 }
@@ -32,18 +33,22 @@ var (
 	}
 )
 
+// DefaultLang default language used in the template
 func DefaultLang() string {
 	return defaultLang
 }
 
+// SetDefaultLang set default language used in the template
 func SetDefaultLang(lang string) {
 	defaultLang = lang
 }
 
+// GetTemplateProvider gets current template provider
 func GetTemplateProvider(lang string) TemplateProvider {
 	return fmtTemplates[lang]
 }
 
+// SetTemplateProvider sets current template provider
 func SetTemplateProvider(lang string, provider TemplateProvider) {
 	fmtTemplates[lang] = provider
 }
