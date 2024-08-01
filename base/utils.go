@@ -1,5 +1,6 @@
 package base
 
+// ToMap transforms a slice to a map with slice items as map keys
 func ToMap[T comparable](s []T) map[T]struct{} {
 	result := make(map[T]struct{}, len(s))
 	for _, v := range s {
@@ -8,6 +9,8 @@ func ToMap[T comparable](s []T) map[T]struct{} {
 	return result
 }
 
+// IsIn returns -1 if every item of a slice is in another slice.
+// Returns index of the first item if it is not in the target slice.
 func IsIn[T comparable](s []T, list []T) int {
 	if len(s) == 0 {
 		return -1
@@ -24,6 +27,8 @@ func IsIn[T comparable](s []T, list []T) int {
 	return -1
 }
 
+// IsNotIn returns -1 if any item of a slice is not in another slice.
+// Returns index of the first item if it is in the target slice.
 func IsNotIn[T comparable](s []T, list []T) int {
 	if len(s) == 0 || len(list) == 0 {
 		return -1
@@ -37,6 +42,8 @@ func IsNotIn[T comparable](s []T, list []T) int {
 	return -1
 }
 
+// IsUnique returns -1 if every item of a slice is unique.
+// Returns index of the first item if it is a duplication of another.
 func IsUnique[T comparable](s []T) int {
 	length := len(s)
 	if length <= 1 {

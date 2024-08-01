@@ -4,6 +4,7 @@ import (
 	"github.com/tiendc/go-validator/base"
 )
 
+// call1 generics function to execute a validation function with 1 param
 func call1[P any](
 	errType, valueType string,
 	validateFunc func(P) (bool, []base.ErrorParam),
@@ -19,6 +20,7 @@ func call1[P any](
 	}
 }
 
+// call2 generics function to execute a validation function with 2 params
 func call2[P1 any, P2 any](
 	errType, valueType string, p2Name string,
 	validateFunc func(P1, P2) (bool, []base.ErrorParam),
@@ -35,6 +37,7 @@ func call2[P1 any, P2 any](
 	}
 }
 
+// call2N generics function to execute a validation function with 1 fixed param and a variable param
 func call2N[P1 any, P2 any](
 	errType, valueType string, p2Name string,
 	validateFunc func(P1, ...P2) (bool, []base.ErrorParam),
@@ -51,6 +54,7 @@ func call2N[P1 any, P2 any](
 	}
 }
 
+// call3 generics function to execute a validation function with 3 params
 func call3[P1 any, P2 any, P3 any](
 	errType, valueType string, p2Name, p3Name string,
 	validateFunc func(P1, P2, P3) (bool, []base.ErrorParam),
@@ -68,6 +72,7 @@ func call3[P1 any, P2 any, P3 any](
 	}
 }
 
+// ptrCall1 generics function to execute a validation function with 1 pointer param
 func ptrCall1[P any](
 	errType, valueType string,
 	validateFunc func(P) (bool, []base.ErrorParam),
@@ -86,6 +91,7 @@ func ptrCall1[P any](
 	}
 }
 
+// ptrCall2 generics function to execute a validation function with 2 pointer params
 func ptrCall2[P1 any, P2 any](
 	errType, valueType string, p2Name string,
 	validateFunc func(P1, P2) (bool, []base.ErrorParam),
@@ -105,6 +111,7 @@ func ptrCall2[P1 any, P2 any](
 	}
 }
 
+// ptrCall2N generics function to execute a validation function with 1 fixed param and a variable param
 func ptrCall2N[P1 any, P2 any](
 	errType, valueType string, p2Name string,
 	validateFunc func(P1, ...P2) (bool, []base.ErrorParam),
@@ -124,6 +131,7 @@ func ptrCall2N[P1 any, P2 any](
 	}
 }
 
+// ptrCall3 generics function to execute a validation function with 3 pointer params
 func ptrCall3[P1 any, P2 any, P3 any](
 	errType, valueType string, p2Name, p3Name string,
 	validateFunc func(P1, P2, P3) (bool, []base.ErrorParam),

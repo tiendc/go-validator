@@ -14,6 +14,7 @@ import (
 )
 
 type (
+	// ErrorParamFormatter interface represents a formatter of error params
 	ErrorParamFormatter interface {
 		Format(k string, v any) string
 	}
@@ -24,21 +25,33 @@ type (
 		formatter ErrorParamFormatter
 	}
 
+	// FormatFunc type of format function which produces string from input value
 	FormatFunc func(reflect.Value) string
 
+	// TypedParamFormatter interface of param formatter which consists of a set of format functions
+	// for common Go value types.
 	TypedParamFormatter interface {
 		ErrorParamFormatter
 
+		// SetNumFormatFunc set format function for numbers
 		SetNumFormatFunc(FormatFunc)
+		// SetStrFormatFunc set format function for strings
 		SetStrFormatFunc(FormatFunc)
+		// SetBoolFormatFunc set format function for bools
 		SetBoolFormatFunc(FormatFunc)
+		// SetSliceFormatFunc set format function for slices
 		SetSliceFormatFunc(FormatFunc)
+		// SetMapFormatFunc set format function for maps
 		SetMapFormatFunc(FormatFunc)
+		// SetStructFormatFunc set format function for structs
 		SetStructFormatFunc(FormatFunc)
+		// SetPtrFormatFunc set format function for pointers
 		SetPtrFormatFunc(FormatFunc)
+		// SetCustomFormatFunc set custom format function
 		SetCustomFormatFunc(FormatFunc)
 	}
 
+	// typedParamFormatter default implementation of TypedParamFormatter
 	typedParamFormatter struct {
 		numFormatFunc    FormatFunc
 		strFormatFunc    FormatFunc
@@ -177,11 +190,13 @@ func (f *typedParamFormatter) customFormat(v reflect.Value) string {
 	return f.customFormatFunc(v)
 }
 
+// NewTypedParamFormatter creates a new TypedParamFormatter with using default format functions
 func NewTypedParamFormatter() TypedParamFormatter {
 	return &typedParamFormatter{}
 }
 
-// NewDecimalNumFormatFunc returns a FormatFunc which groups digits of decimal
+// NewDecimalNumFormatFunc returns a FormatFunc which groups digits of decimal.
+//
 // For example: '12345' -> '12,345', '12345.6789' -> '12,345.6789'
 // To attach this formatter to Error object:
 //   - err.TypedParamFormatter().SetNumFormatFunc(NewDecimalNumFormatFunc())
@@ -206,7 +221,8 @@ func NewDecimalNumFormatFunc(floatFmt ...string) FormatFunc {
 	}
 }
 
-// NewDecimalFormatFunc returns a FormatFunc which can format and group digits of decimal or integer
+// NewDecimalFormatFunc returns a FormatFunc which can format and group digits of decimal or integer.
+//
 // For example: '12345' -> '12,345', '12345.6789' -> '12,345.6789'
 // To attach this formatter to Error object:
 //   - err.TypedParamFormatter().SetNumFormatFunc(NewDecimalFormatFunc('.', ',', "%.2f"))
@@ -228,7 +244,7 @@ func NewDecimalFormatFunc(fractionSep, groupSep byte, floatFmt string) FormatFun
 	}
 }
 
-// NewSliceFormatFunc create a new func for formatting a slice
+// NewSliceFormatFunc create a new func for formatting a slice.
 // Sample arguments: leftWrap "[", rightWrap "]", elemSep ", "
 func NewSliceFormatFunc(
 	elemFormatFunc FormatFunc,
@@ -248,7 +264,7 @@ func NewSliceFormatFunc(
 	}
 }
 
-// NewMapFormatFunc create a new func for formatting a map
+// NewMapFormatFunc create a new func for formatting a map.
 // Sample arguments: leftWrap "{", rightWrap "}", kvSep ":", elemSep ", "
 func NewMapFormatFunc(
 	keyFormatFunc, valueFormatFunc FormatFunc,
@@ -285,7 +301,7 @@ func NewJSONFormatFunc() FormatFunc {
 	}
 }
 
-// errorBuildDetail builds detail string of error using the error template string
+// errorBuildDetail builds detail string of error using the error template string.
 // In case error happens, this function still returns the result string before error happens
 func errorBuildDetail(e Error) (detail string, retErr error) {
 	detail = e.Template()

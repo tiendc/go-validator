@@ -2,15 +2,18 @@ package validation
 
 import "fmt"
 
+// Validator interface represents a validator object
 type Validator interface {
 	Exec() Errors
 }
 
+// SingleValidator interface represents a validator that performs a single validation
 type SingleValidator interface {
 	Validator
 	OnError(...ErrorMod) SingleValidator
 }
 
+// NewSingleValidator creates a new SingleValidator
 func NewSingleValidator(execFn func() Error) SingleValidator {
 	return &singleValidator{
 		execFn: execFn,
@@ -41,24 +44,28 @@ func (v *singleValidator) OnError(mods ...ErrorMod) SingleValidator {
 	return v
 }
 
-// CondValidator validator runs on specified a condition
+// CondValidator interface represents a validator that performs multiple validations based on
+// specified conditions.
 type CondValidator interface {
 	Validator
 	ExecEx() (bool, Errors)
 }
 
+// SingleCondValidator validator that accepts only one condition
 type SingleCondValidator interface {
 	CondValidator
 	Then(validators ...Validator) SingleCondValidator
 	Else(validators ...Validator) SingleCondValidator
 }
 
+// singleCondValidator implementation of SingleCondValidator
 type singleCondValidator struct {
 	conditions     []any
 	thenValidators []Validator
 	elseValidators []Validator
 }
 
+// NewSingleCondValidator creates a new SingleCondValidator
 func NewSingleCondValidator(conditions ...any) SingleCondValidator {
 	return &singleCondValidator{conditions: conditions}
 }
@@ -115,16 +122,19 @@ func (c *singleCondValidator) match() bool {
 	return true
 }
 
+// MultiCondValidator validator that accepts multiple conditions
 type MultiCondValidator interface {
 	CondValidator
 	Default(validators ...Validator) MultiCondValidator
 }
 
+// multiCondValidator implementation of MultiCondValidator
 type multiCondValidator struct {
 	conditions        []SingleCondValidator
 	defaultValidators []Validator
 }
 
+// NewMultiCondValidator creates a new MultiCondValidator
 func NewMultiCondValidator(conditions ...SingleCondValidator) MultiCondValidator {
 	return &multiCondValidator{conditions: conditions}
 }

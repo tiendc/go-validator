@@ -10,6 +10,7 @@ const (
 	kItemIndex = "ItemIndex"
 )
 
+// EQ checks a slice must equal to a slice
 func EQ[T comparable](s []T, s2 []T) (bool, []base.ErrorParam) {
 	if len(s) != len(s2) {
 		return false, nil
@@ -22,6 +23,7 @@ func EQ[T comparable](s []T, s2 []T) (bool, []base.ErrorParam) {
 	return true, nil
 }
 
+// Len checks slice length must be in a range
 func Len[T any](s []T, min, max int) (bool, []base.ErrorParam) {
 	l := len(s)
 	if min <= l && l <= max {
@@ -30,6 +32,7 @@ func Len[T any](s []T, min, max int) (bool, []base.ErrorParam) {
 	return false, []base.ErrorParam{{Key: kLen, Value: l}}
 }
 
+// Unique checks slice items must be unique
 func Unique[T comparable](s []T) (bool, []base.ErrorParam) {
 	errIdx := base.IsUnique(s)
 	if errIdx == -1 {
@@ -38,6 +41,7 @@ func Unique[T comparable](s []T) (bool, []base.ErrorParam) {
 	return false, []base.ErrorParam{{Key: kItemValue, Value: s[errIdx]}, {Key: kItemIndex, Value: errIdx}}
 }
 
+// Sorted checks slice items must be in ascending order
 func Sorted[T base.Number | base.String](s []T) (bool, []base.ErrorParam) {
 	for i := 1; i < len(s); i++ {
 		if s[i-1] > s[i] {
@@ -47,6 +51,7 @@ func Sorted[T base.Number | base.String](s []T) (bool, []base.ErrorParam) {
 	return true, nil
 }
 
+// SortedDesc checks slice items must be in descending order
 func SortedDesc[T base.Number | base.String](s []T) (bool, []base.ErrorParam) {
 	for i := 1; i < len(s); i++ {
 		if s[i-1] < s[i] {
@@ -56,6 +61,7 @@ func SortedDesc[T base.Number | base.String](s []T) (bool, []base.ErrorParam) {
 	return true, nil
 }
 
+// ElemIn checks slice items must be in a list
 func ElemIn[T comparable](s []T, values ...T) (bool, []base.ErrorParam) {
 	errIdx := base.IsIn(s, values)
 	if errIdx == -1 {
@@ -64,6 +70,7 @@ func ElemIn[T comparable](s []T, values ...T) (bool, []base.ErrorParam) {
 	return false, []base.ErrorParam{{Key: kItemValue, Value: s[errIdx]}, {Key: kItemIndex, Value: errIdx}}
 }
 
+// ElemNotIn checks slice items must be not in a list
 func ElemNotIn[T comparable](s []T, values ...T) (bool, []base.ErrorParam) {
 	errIdx := base.IsNotIn(s, values)
 	if errIdx == -1 {
@@ -72,6 +79,7 @@ func ElemNotIn[T comparable](s []T, values ...T) (bool, []base.ErrorParam) {
 	return false, []base.ErrorParam{{Key: kItemValue, Value: s[errIdx]}, {Key: kItemIndex, Value: errIdx}}
 }
 
+// ElemRange checks slice items must be in a range (applies to item type string or number only)
 func ElemRange[T base.Number | base.String](s []T, min, max T) (bool, []base.ErrorParam) {
 	for i, v := range s {
 		if v < min || v > max {

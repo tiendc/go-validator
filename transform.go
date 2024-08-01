@@ -7,7 +7,8 @@ import (
 )
 
 // ToLower transforms characters of a string to lowercase
-// E.g. validation.StrIsEmail(validation.ToLower(&req.Email))
+//
+// Example: validation.StrIsEmail(validation.ToLower(&req.Email))
 func ToLower[T base.String](v *T) *T {
 	if v == nil {
 		return v
@@ -16,6 +17,7 @@ func ToLower[T base.String](v *T) *T {
 	return &vv
 }
 
+// ToUpper transforms characters of a string to uppercase
 func ToUpper[T base.String](v *T) *T {
 	if v == nil {
 		return v
@@ -24,6 +26,7 @@ func ToUpper[T base.String](v *T) *T {
 	return &vv
 }
 
+// ToInt64 transforms a number to int64 value
 func ToInt64[T base.Number](v *T) *int64 {
 	if v == nil {
 		return nil
@@ -32,6 +35,7 @@ func ToInt64[T base.Number](v *T) *int64 {
 	return &vv
 }
 
+// ToUint64 transforms a number to uint64 value
 func ToUint64[T base.Number](v *T) *uint64 {
 	if v == nil {
 		return nil
@@ -40,6 +44,7 @@ func ToUint64[T base.Number](v *T) *uint64 {
 	return &vv
 }
 
+// ToFloat64 transforms a number to float64 value
 func ToFloat64[T base.Number](v *T) *float64 {
 	if v == nil {
 		return nil
