@@ -14,8 +14,13 @@ go get github.com/tiendc/go-validator
 
 #### General usage
 ```go
+    import (
+        vld "github.com/tiendc/go-validator"
+    )
+
     type Person struct {
-        Name      string
+        FirstName string
+        LastName  string
         Birthdate time.Time
 
         Unemployed bool
@@ -23,58 +28,62 @@ go get github.com/tiendc/go-validator
         Rank       string
         WorkEmail  string
     }
+    var p Person
 
-    p := Person{
-        Name:       "",
-        Unemployed: false,
-        Rank:       "Manager",
-        Salary:     1000,
-    }
-
-    errs := Validate(
-        Required(&p.Name),
-        StrLen(&p.Name, 3, 100).OnError(
-            SetField("name", nil),
-            SetCustomKey("ERR_PERSON_NAME_REQUIRED"),
+    errs := vld.Validate(
+        // Validate first and last names separately
+        vld.StrLen(&p.FirstName, 3, 30).OnError(
+            vld.SetField("first_name", nil),
+            vld.SetCustomKey("ERR_VLD_PERSON_FIRST_NAME_INVALID"),
         ),
-        Required(&p.Birthdate),
-        When(!p.Unemployed).Then(
-            Required(&p.Salary),
+        vld.StrLen(&p.FirstName, 3, 30).OnError(
+            vld.SetField("last_name", nil),
+            vld.SetCustomKey("ERR_VLD_PERSON_LAST_NAME_INVALID"),
+        ),
 
-            // WorkEmail is required and must be valid
-            Required(&p.WorkEmail),
-            StrIsEmail(&p.WorkEmail),
-            // OR use this to produce only one error when the validation fails
-            Group(
-                Required(&p.WorkEmail),
-                StrIsEmail(&p.WorkEmail),
-            ).OnError(...),
+        // OR use this to produce only one error when one of them fails
+        vld.Group(
+            vld.StrLen(&p.FirstName, 3, 30),
+            vld.StrLen(&p.LastName, 3, 30),
+        ).OnError(
+            vld.SetField("name", nil),
+            vld.SetCustomKey("ERR_VLD_PERSON_NAME_INVALID"),
+        ),
 
-            StrIn(&p.Rank, "Employee", "Manager", "Director"),
-            Case(
-                When(p.Rank == "Manager").Then(NumGT(&p.Salary, 10000)),
-                When(p.Rank == "Director").Then(NumGT(&p.Salary, 30000)),
+        // Birthdate is required
+        vld.Required(&p.Birthdate),
+
+        vld.When(!p.Unemployed).Then(
+            vld.Required(&p.Salary),
+            // Work email must be valid
+            vld.StrIsEmail(&p.WorkEmail),
+            // Rank must be one of the constants
+            vld.StrIn(&p.Rank, "Employee", "Manager", "Director"),
+            vld.Case(
+                vld.When(p.Rank == "Manager").Then(vld.NumGT(&p.Salary, 10000)),
+                vld.When(p.Rank == "Director").Then(vld.NumGT(&p.Salary, 30000)),
             ).Default(
-                NumLT(&p.Salary, 10000),
+                vld.NumLT(&p.Salary, 10000),
             ),
         ).Else(
-            NumEQ(&p.Salary, 0),
-            StrEQ(&p.WorkEmail, ""),
+            // When person is unemployed
+            vld.NumEQ(&p.Salary, 0),
+            vld.StrEQ(&p.WorkEmail, ""),
         ),
 
-        // OTHERS
+        // OTHER FUNCTIONS
         // Pass if at least one of the validations passes
-        OneOf(
+        vld.OneOf(
             // List of validations
         ),
 
         // Pass if exact one of the validations passes
-        ExactOneOf(
+        vld.ExactOneOf(
             // List of validations
         ),
 
         // Pass if none of the validations passes
-        NotOf(
+        vld.NotOf(
             // List of validations
         ),
     )
@@ -106,16 +115,16 @@ go get github.com/tiendc/go-validator
 ```go
     // Supposed you have 2 files defining error messages
     // In `error_messages.en`:
-    // ERR_EMPLOYEE_AGE_TOO_BIG = "Employee {{.EmployeeName}} has age bigger than {{.Max}}"
+    // ERR_VLD_EMPLOYEE_AGE_TOO_BIG = "Employee {{.EmployeeName}} has age bigger than {{.Max}}"
     // In `error_messages.vi`:
-    // ERR_EMPLOYEE_AGE_TOO_BIG = "Nhân viên {{.EmployeeName}} có tuổi lớn hơn {{.Max}}"
+    // ERR_VLD_EMPLOYEE_AGE_TOO_BIG = "Nhân viên {{.EmployeeName}} có tuổi lớn hơn {{.Max}}"
 
     errs := Validate(
         NumLTE(&p.Age, 40).OnError(
             // Custom param (the default template doesn't have this one)
             SetParam("EmployeeName", p.Name),
             // Custom key to define custom template to use
-            SetCustomKey("ERR_EMPLOYEE_AGE_TOO_BIG"),
+            SetCustomKey("ERR_VLD_EMPLOYEE_AGE_TOO_BIG"),
         ),
     )
 
