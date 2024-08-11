@@ -27,6 +27,7 @@ go get github.com/tiendc/go-validator
         Salary     uint
         Rank       string
         WorkEmail  string
+        Projects   []string
     }
     var p Person
 
@@ -50,13 +51,16 @@ go get github.com/tiendc/go-validator
             vld.SetCustomKey("ERR_VLD_PERSON_NAME_INVALID"),
         ),
 
-        // Birthdate is required
-        vld.Required(&p.Birthdate),
+        // Birthdate is optional, but when it's present, it must be within 1950 and now
+        vld.When(!p.Birthdate.IsZero()).Then(
+            vld.TimeRange(p.Birthdate, <1950-01-01>, time.Now()).OnError(...),
+        )
 
         vld.When(!p.Unemployed).Then(
             vld.Required(&p.Salary),
             // Work email must be valid
             vld.StrIsEmail(&p.WorkEmail),
+
             // Rank must be one of the constants
             vld.StrIn(&p.Rank, "Employee", "Manager", "Director"),
             vld.Case(
@@ -65,6 +69,12 @@ go get github.com/tiendc/go-validator
             ).Default(
                 vld.NumLT(&p.Salary, 10000),
             ),
+
+            // Projects are optional, but when they are present, they must be unique and sorted
+            vld.When(len(p.Projects) > 0).Then(
+                vld.SliceUnique(p.Projects).OnError(...),
+                vld.SliceSorted(p.Projects).OnError(...),
+            )
         ).Else(
             // When person is unemployed
             vld.NumEQ(&p.Salary, 0),
