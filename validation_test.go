@@ -205,6 +205,21 @@ func Test_When(t *testing.T) {
 		assert.Equal(t, 0, len(errs))
 	})
 
+	t.Run("success with OnError() set for final error", func(t *testing.T) {
+		i1 := 1
+		i2 := 10
+		errs := Validate(
+			When(NumEQ(&i1, 2)).Then(
+				NumEQ(&i2, 100),
+			).Else(
+				NumEQ(&i2, 10),
+			).OnError(
+				SetCustomKey("custom_key"),
+			),
+		)
+		assert.Equal(t, 0, len(errs))
+	})
+
 	t.Run("failure then", func(t *testing.T) {
 		i1 := 1
 		i2 := 10
@@ -232,6 +247,34 @@ func Test_When(t *testing.T) {
 		assert.Equal(t, 1, len(errs))
 		assert.Equal(t, "eq", errs[0].Type())
 	})
+
+	t.Run("failure as invalid condition input", func(t *testing.T) {
+		defer func() {
+			e := recover()
+			assert.Equal(t, "type unsupported: only 'bool' or 'validator' allowed", e.(error).Error())
+		}()
+
+		_ = Validate(
+			When(123).Then(),
+		)
+	})
+
+	t.Run("failure with OnError() set for final error", func(t *testing.T) {
+		i1 := 1
+		i2 := 10
+		errs := Validate(
+			When(NumEQ(&i1, 2)).Then(
+				NumGT(&i2, 100),
+			).Else(
+				NumEQ(&i2, 100),
+			).OnError(
+				SetCustomKey("custom_key"),
+			),
+		)
+		assert.Equal(t, 1, len(errs))
+		assert.Equal(t, "eq", errs[0].Type())
+		assert.Equal(t, "custom_key", errs[0].CustomKey())
+	})
 }
 
 func Test_Case(t *testing.T) {
@@ -258,6 +301,22 @@ func Test_Case(t *testing.T) {
 				When(NumEQ(&i1, 2)).Then(NumLT(&i2, 100)),
 			).Default(
 				NumEQ(&i2, 10),
+			),
+		)
+		assert.Equal(t, 0, len(errs))
+	})
+
+	t.Run("success case with OnError() set for final error", func(t *testing.T) {
+		i1 := 1
+		i2 := 10
+		errs := Validate(
+			Case(
+				When(NumEQ(&i1, 1)).Then(NumGT(&i2, 0)),
+				When(NumEQ(&i1, 2)).Then(NumLT(&i2, 100)),
+			).Default(
+				NumEQ(&i2, 1),
+			).OnError(
+				SetCustomKey("custom_key"),
 			),
 		)
 		assert.Equal(t, 0, len(errs))
@@ -291,5 +350,47 @@ func Test_Case(t *testing.T) {
 		)
 		assert.Equal(t, 1, len(errs))
 		assert.Equal(t, "eq", errs[0].Type())
+	})
+
+	t.Run("failure case with OnError() set for final error", func(t *testing.T) {
+		i1 := 2
+		i2 := 100
+		errs := Validate(
+			Case(
+				When(NumEQ(&i1, 1)).Then(NumGT(&i2, 0)),
+				When(NumEQ(&i1, 2)).Then(NumLT(&i2, 10)),
+			).Default(
+				NumEQ(&i2, 10),
+			).OnError(
+				SetCustomKey("custom_key"),
+			),
+		)
+		assert.Equal(t, 1, len(errs))
+		assert.Equal(t, "lt", errs[0].Type())
+		assert.Equal(t, "custom_key", errs[0].CustomKey())
+	})
+
+	t.Run("failure case with OnError() set for multiple final errors", func(t *testing.T) {
+		i1 := 2
+		i2 := 100
+		errs := Validate(
+			Case(
+				When(NumEQ(&i1, 1)).Then(NumGT(&i2, 0)),
+				When(NumEQ(&i1, 2)).Then(
+					NumLT(&i2, 10),
+					NumEQ(&i2, 11),
+				),
+			).Default(
+				NumEQ(&i2, 10),
+			).OnError(
+				SetCustomKey("custom_key"),
+			),
+		)
+		assert.Equal(t, 1, len(errs))
+		assert.Equal(t, "group", errs[0].Type())
+		assert.Equal(t, "custom_key", errs[0].CustomKey())
+		inErrs := errs[0].UnwrapAsErrors()
+		assert.Equal(t, "lt", inErrs[0].Type())
+		assert.Equal(t, "eq", inErrs[1].Type())
 	})
 }

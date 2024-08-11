@@ -5,12 +5,37 @@ import "fmt"
 // Validator interface represents a validator object
 type Validator interface {
 	Exec() Errors
+	OnError(...ErrorMod) Validator
+}
+
+// baseValidator base validator
+type baseValidator struct {
+	errMods []ErrorMod
+}
+
+// applyErrMods applies mods on the target error
+func (b *baseValidator) applyErrMods(err Error) {
+	for _, mod := range b.errMods {
+		mod(err)
+	}
+}
+
+// applyErrModsWithGrouping applies mods on the target error.
+// If the input has more than 1 error, this creates a `group` error and applies mods on it.
+func (b *baseValidator) applyErrModsWithGrouping(errs Errors) Errors {
+	if len(b.errMods) == 0 || len(errs) == 0 {
+		return errs
+	}
+	if len(errs) > 1 {
+		errs = []Error{errorBuild("group", "", nil, errs)}
+	}
+	b.applyErrMods(errs[0])
+	return errs
 }
 
 // SingleValidator interface represents a validator that performs a single validation
 type SingleValidator interface {
 	Validator
-	OnError(...ErrorMod) SingleValidator
 }
 
 // NewSingleValidator creates a new SingleValidator
@@ -22,8 +47,14 @@ func NewSingleValidator(execFn func() Error) SingleValidator {
 
 // singleValidator implementation of SingleValidator interface
 type singleValidator struct {
-	execFn  func() Error
-	errMods []ErrorMod
+	baseValidator
+	execFn func() Error
+}
+
+// OnError implementation of Validator interface
+func (v *singleValidator) OnError(mods ...ErrorMod) Validator {
+	v.errMods = mods
+	return v
 }
 
 // Exec executes the validator
@@ -32,16 +63,8 @@ func (v *singleValidator) Exec() Errors {
 	if err == nil {
 		return nil
 	}
-	for _, fn := range v.errMods {
-		fn(err)
-	}
+	v.applyErrMods(err)
 	return []Error{err}
-}
-
-// OnError sets modifiers for validation error when it comes
-func (v *singleValidator) OnError(mods ...ErrorMod) SingleValidator {
-	v.errMods = append(v.errMods, mods...)
-	return v
 }
 
 // CondValidator interface represents a validator that performs multiple validations based on
@@ -60,6 +83,7 @@ type SingleCondValidator interface {
 
 // singleCondValidator implementation of SingleCondValidator
 type singleCondValidator struct {
+	baseValidator
 	conditions     []any
 	thenValidators []Validator
 	elseValidators []Validator
@@ -71,18 +95,23 @@ func NewSingleCondValidator(conditions ...any) SingleCondValidator {
 }
 
 func (c *singleCondValidator) Then(validators ...Validator) SingleCondValidator {
-	c.thenValidators = append(c.thenValidators, validators...)
+	c.thenValidators = validators
 	return c
 }
 
 func (c *singleCondValidator) Else(validators ...Validator) SingleCondValidator {
-	c.elseValidators = append(c.elseValidators, validators...)
+	c.elseValidators = validators
+	return c
+}
+
+func (c *singleCondValidator) OnError(errMods ...ErrorMod) Validator {
+	c.errMods = errMods
 	return c
 }
 
 func (c *singleCondValidator) Exec() Errors {
 	_, errs := c.ExecEx()
-	return errs
+	return c.applyErrModsWithGrouping(errs)
 }
 
 func (c *singleCondValidator) ExecEx() (bool, Errors) {
@@ -130,6 +159,7 @@ type MultiCondValidator interface {
 
 // multiCondValidator implementation of MultiCondValidator
 type multiCondValidator struct {
+	baseValidator
 	conditions        []SingleCondValidator
 	defaultValidators []Validator
 }
@@ -140,13 +170,18 @@ func NewMultiCondValidator(conditions ...SingleCondValidator) MultiCondValidator
 }
 
 func (c *multiCondValidator) Default(validators ...Validator) MultiCondValidator {
-	c.defaultValidators = append(c.defaultValidators, validators...)
+	c.defaultValidators = validators
+	return c
+}
+
+func (c *multiCondValidator) OnError(mods ...ErrorMod) Validator {
+	c.errMods = mods
 	return c
 }
 
 func (c *multiCondValidator) Exec() Errors {
 	_, errs := c.ExecEx()
-	return errs
+	return c.applyErrModsWithGrouping(errs)
 }
 
 func (c *multiCondValidator) ExecEx() (bool, Errors) {
