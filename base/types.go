@@ -7,19 +7,13 @@ import (
 )
 
 // Int interface of int types and int-derived types
-type Int interface {
-	gofn.Int | gofn.IntEx
-}
+type Int gofn.IntExt
 
 // UInt interface of uint types and uint-derived types
-type UInt interface {
-	gofn.UInt | gofn.UIntEx
-}
+type UInt gofn.UIntExt
 
 // Float interface of float types and float-derived types
-type Float interface {
-	gofn.Float | gofn.FloatEx
-}
+type Float gofn.FloatExt
 
 // Number interface of combined type of Int, UInt, and Float
 type Number interface {
@@ -27,9 +21,7 @@ type Number interface {
 }
 
 // String interface of string type and string-derived types
-type String interface {
-	~string
-}
+type String gofn.StringExt
 
 // Time interface of time type
 type Time interface {
