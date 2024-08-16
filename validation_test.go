@@ -19,7 +19,7 @@ func Test_Group(t *testing.T) {
 	})
 
 	t.Run("success with empty input", func(t *testing.T) {
-		errs := Validate(
+		errs := ValidateWithCtx(ctxBg,
 			Group(),
 		)
 		assert.Equal(t, 0, len(errs))

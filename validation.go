@@ -1,18 +1,25 @@
 package validation
 
+import "context"
+
 // Validate executes given validators to make result.
 func Validate(validators ...Validator) Errors {
-	return execValidators(validators, false)
+	return execValidators(context.Background(), validators, false)
+}
+
+// ValidateWithCtx executes given validators with given context.
+func ValidateWithCtx(ctx context.Context, validators ...Validator) Errors {
+	return execValidators(ctx, validators, false)
 }
 
 // Group groups the given validators into one.
 // In case there are errors, only one error will be returned.
 func Group(validators ...Validator) SingleValidator {
-	return NewSingleValidator(func() Error {
+	return NewSingleValidator(func(ctx context.Context) Error {
 		if len(validators) == 0 {
 			return nil
 		}
-		errs := execValidators(validators, false)
+		errs := execValidators(ctx, validators, false)
 		if len(errs) == 0 {
 			return nil
 		}
@@ -23,13 +30,13 @@ func Group(validators ...Validator) SingleValidator {
 // OneOf checks if the target value satisfies one of the given validators.
 // When a validator passes, the remaining ones will be skipped.
 func OneOf(validators ...Validator) SingleValidator {
-	return NewSingleValidator(func() Error {
+	return NewSingleValidator(func(ctx context.Context) Error {
 		if len(validators) == 0 {
 			return nil
 		}
 		wrapErrs := Errors{}
 		for _, v := range validators {
-			errs := v.Exec()
+			errs := v.Validate(ctx)
 			if len(errs) == 0 {
 				return nil // return nil when one passes
 			}
@@ -42,11 +49,11 @@ func OneOf(validators ...Validator) SingleValidator {
 // ExactOneOf checks if the target value satisfies only one of the given validators.
 // This returns error when there is not one or more than one validator pass.
 func ExactOneOf(validators ...Validator) SingleValidator {
-	return NewSingleValidator(func() Error {
+	return NewSingleValidator(func(ctx context.Context) Error {
 		numValidatorPass := 0
 		wrapErrs := Errors{}
 		for _, v := range validators {
-			errs := v.Exec()
+			errs := v.Validate(ctx)
 			if len(errs) == 0 {
 				numValidatorPass++
 			} else {
@@ -66,9 +73,9 @@ func ExactOneOf(validators ...Validator) SingleValidator {
 // NotOf checks the target value not satisfy any of the given validators.
 // When a validator passes, an error will be returned and the remaining checks will be skipped.
 func NotOf(validators ...Validator) SingleValidator {
-	return NewSingleValidator(func() Error {
+	return NewSingleValidator(func(ctx context.Context) Error {
 		for _, v := range validators {
-			errs := v.Exec()
+			errs := v.Validate(ctx)
 			if len(errs) == 0 {
 				return errorBuild("not_of", "", nil, nil)
 			}
@@ -81,7 +88,7 @@ func NotOf(validators ...Validator) SingleValidator {
 // `If(myTime.Before(dueDate)).OnError(vld.SetCustomKey("MY_ERR_KEY"))`.
 // Deprecated: use `Must` instead
 func If(cond bool) SingleValidator {
-	return NewSingleValidator(func() Error {
+	return NewSingleValidator(func(context.Context) Error {
 		if cond {
 			return nil
 		}
@@ -92,7 +99,7 @@ func If(cond bool) SingleValidator {
 // Must a bare check validation convenient for validating custom data such as
 // `Must(myTime.Before(dueDate)).OnError(vld.SetCustomKey("MY_ERR_KEY"))`.
 func Must(cond bool) SingleValidator {
-	return NewSingleValidator(func() Error {
+	return NewSingleValidator(func(context.Context) Error {
 		if cond {
 			return nil
 		}
@@ -112,11 +119,11 @@ func Case(conditions ...SingleCondValidator) MultiCondValidator {
 
 // execValidators executes a list of validators and collect errors as result
 // nolint: unparam
-func execValidators(validators []Validator, stopOnError bool) Errors {
+func execValidators(ctx context.Context, validators []Validator, stopOnError bool) Errors {
 	errs := make(Errors, 0, len(validators))
 	for _, v := range validators {
 		hasErr := false
-		for _, e := range v.Exec() {
+		for _, e := range v.Validate(ctx) {
 			if e == nil {
 				continue
 			}
