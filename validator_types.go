@@ -1,10 +1,13 @@
 package validation
 
-import "fmt"
+import (
+	"context"
+	"fmt"
+)
 
 // Validator interface represents a validator object
 type Validator interface {
-	Exec() Errors
+	Validate(context.Context) Errors
 	OnError(...ErrorMod) Validator
 }
 
@@ -39,7 +42,7 @@ type SingleValidator interface {
 }
 
 // NewSingleValidator creates a new SingleValidator
-func NewSingleValidator(execFn func() Error) SingleValidator {
+func NewSingleValidator(execFn func(ctx context.Context) Error) SingleValidator {
 	return &singleValidator{
 		execFn: execFn,
 	}
@@ -48,7 +51,7 @@ func NewSingleValidator(execFn func() Error) SingleValidator {
 // singleValidator implementation of SingleValidator interface
 type singleValidator struct {
 	baseValidator
-	execFn func() Error
+	execFn func(ctx context.Context) Error
 }
 
 // OnError implementation of Validator interface
@@ -57,9 +60,9 @@ func (v *singleValidator) OnError(mods ...ErrorMod) Validator {
 	return v
 }
 
-// Exec executes the validator
-func (v *singleValidator) Exec() Errors {
-	err := v.execFn()
+// Validate executes the validator
+func (v *singleValidator) Validate(ctx context.Context) Errors {
+	err := v.execFn(ctx)
 	if err == nil {
 		return nil
 	}
@@ -71,7 +74,7 @@ func (v *singleValidator) Exec() Errors {
 // specified conditions.
 type CondValidator interface {
 	Validator
-	ExecEx() (bool, Errors)
+	ValidateWithCond(context.Context) (bool, Errors)
 }
 
 // SingleCondValidator validator that accepts only one condition
@@ -109,24 +112,24 @@ func (c *singleCondValidator) OnError(errMods ...ErrorMod) Validator {
 	return c
 }
 
-func (c *singleCondValidator) Exec() Errors {
-	_, errs := c.ExecEx()
+func (c *singleCondValidator) Validate(ctx context.Context) Errors {
+	_, errs := c.ValidateWithCond(ctx)
 	return c.applyErrModsWithGrouping(errs)
 }
 
-func (c *singleCondValidator) ExecEx() (bool, Errors) {
+func (c *singleCondValidator) ValidateWithCond(ctx context.Context) (bool, Errors) {
 	validators := c.thenValidators
-	match := c.match()
+	match := c.match(ctx)
 	if !match {
 		validators = c.elseValidators
 	}
 	if len(validators) == 0 {
 		return match, nil
 	}
-	return match, execValidators(validators, false)
+	return match, execValidators(ctx, validators, false)
 }
 
-func (c *singleCondValidator) match() bool {
+func (c *singleCondValidator) match(ctx context.Context) bool {
 	if len(c.conditions) == 0 {
 		return false
 	}
@@ -140,7 +143,7 @@ func (c *singleCondValidator) match() bool {
 		}
 		validator, ok := cond.(Validator)
 		if ok {
-			errs := validator.Exec()
+			errs := validator.Validate(ctx)
 			if len(errs) > 0 {
 				return false
 			}
@@ -179,18 +182,18 @@ func (c *multiCondValidator) OnError(mods ...ErrorMod) Validator {
 	return c
 }
 
-func (c *multiCondValidator) Exec() Errors {
-	_, errs := c.ExecEx()
+func (c *multiCondValidator) Validate(ctx context.Context) Errors {
+	_, errs := c.ValidateWithCond(ctx)
 	return c.applyErrModsWithGrouping(errs)
 }
 
-func (c *multiCondValidator) ExecEx() (bool, Errors) {
+func (c *multiCondValidator) ValidateWithCond(ctx context.Context) (bool, Errors) {
 	for _, v := range c.conditions {
-		match, errs := v.ExecEx()
+		match, errs := v.ValidateWithCond(ctx)
 		if match {
 			return true, errs
 		}
 	}
 	// No match condition, executes the default ones
-	return false, execValidators(c.defaultValidators, false)
+	return false, execValidators(ctx, c.defaultValidators, false)
 }

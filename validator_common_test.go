@@ -1,103 +1,106 @@
 package validation
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tiendc/gofn"
 )
 
+var ctxBg = context.Background()
+
 func Test_Nil_NotNil(t *testing.T) {
 	// Success cases
-	errsNil := Nil[any](nil).Exec()
-	errsNotNil := NotNil[any](nil).Exec()
+	errsNil := Nil[any](nil).Validate(ctxBg)
+	errsNotNil := NotNil[any](nil).Validate(ctxBg)
 	assert.True(t, len(errsNil) == 0 && len(errsNotNil) == 1)
 
 	var pStr *string
-	errsNil = Nil(pStr).Exec()
-	errsNotNil = NotNil(pStr).Exec()
+	errsNil = Nil(pStr).Validate(ctxBg)
+	errsNotNil = NotNil(pStr).Validate(ctxBg)
 	assert.True(t, len(errsNil) == 0 && len(errsNotNil) == 1)
 
 	var pSlice *[]string
-	errsNil = Nil(pSlice).Exec()
-	errsNotNil = NotNil(pSlice).Exec()
+	errsNil = Nil(pSlice).Validate(ctxBg)
+	errsNotNil = NotNil(pSlice).Validate(ctxBg)
 	assert.True(t, len(errsNil) == 0 && len(errsNotNil) == 1)
 
 	var pMap *map[int]bool
-	errsNil = Nil(pMap).Exec()
-	errsNotNil = NotNil(pMap).Exec()
+	errsNil = Nil(pMap).Validate(ctxBg)
+	errsNotNil = NotNil(pMap).Validate(ctxBg)
 	assert.True(t, len(errsNil) == 0 && len(errsNotNil) == 1)
 
 	// Failure cases
-	errsNil = Nil(gofn.New[any]("")).Exec()
-	errsNotNil = NotNil(gofn.New[any]("")).Exec()
+	errsNil = Nil(gofn.New[any]("")).Validate(ctxBg)
+	errsNotNil = NotNil(gofn.New[any]("")).Validate(ctxBg)
 	assert.False(t, len(errsNil) == 0 && len(errsNotNil) == 1)
 
-	errsNil = Nil(gofn.New[int](0)).Exec()
-	errsNotNil = NotNil(gofn.New[int](0)).Exec()
+	errsNil = Nil(gofn.New[int](0)).Validate(ctxBg)
+	errsNotNil = NotNil(gofn.New[int](0)).Validate(ctxBg)
 	assert.False(t, len(errsNil) == 0 && len(errsNotNil) == 1)
 
 	var aSlice []string
-	errsNil = Nil(&aSlice).Exec()
-	errsNotNil = NotNil(&aSlice).Exec()
+	errsNil = Nil(&aSlice).Validate(ctxBg)
+	errsNotNil = NotNil(&aSlice).Validate(ctxBg)
 	assert.False(t, len(errsNil) == 0 && len(errsNotNil) == 1)
 
 	var aMap map[int]bool
-	errsNil = Nil(&aMap).Exec()
-	errsNotNil = NotNil(&aMap).Exec()
+	errsNil = Nil(&aMap).Validate(ctxBg)
+	errsNotNil = NotNil(&aMap).Validate(ctxBg)
 	assert.False(t, len(errsNil) == 0 && len(errsNotNil) == 1)
 }
 
 func Test_Required(t *testing.T) {
 	// Failure cases
-	errs := Required(nil).Exec()
+	errs := Required(nil).Validate(ctxBg)
 	assert.Equal(t, 1, len(errs))
 	assert.Equal(t, "required", errs[0].Type())
 
 	aInt := int32(0)
-	errs = Required(&aInt).Exec()
+	errs = Required(&aInt).Validate(ctxBg)
 	assert.Equal(t, 1, len(errs))
 	assert.Equal(t, "required", errs[0].Type())
 
 	aStr := ""
-	errs = Required(&aStr).Exec()
+	errs = Required(&aStr).Validate(ctxBg)
 	assert.Equal(t, 1, len(errs))
 	assert.Equal(t, "required", errs[0].Type())
 
 	aSlice := []string{}
-	errs = Required(&aSlice).Exec()
+	errs = Required(&aSlice).Validate(ctxBg)
 	assert.Equal(t, 1, len(errs))
 	assert.Equal(t, "required", errs[0].Type())
 
 	aMap := map[int]bool{}
-	errs = Required(&aMap).Exec()
+	errs = Required(&aMap).Validate(ctxBg)
 	assert.Equal(t, 1, len(errs))
 	assert.Equal(t, "required", errs[0].Type())
 
 	var aAny any
 	aAny = aMap
-	errs = Required(&aAny).Exec()
+	errs = Required(&aAny).Validate(ctxBg)
 	assert.Equal(t, 1, len(errs))
 	assert.Equal(t, "required", errs[0].Type())
 
 	// Success cases
 	aInt = 1
-	errs = Required(&aInt).Exec()
+	errs = Required(&aInt).Validate(ctxBg)
 	assert.Equal(t, 0, len(errs))
 
 	aStr = "a"
-	errs = Required(&aStr).Exec()
+	errs = Required(&aStr).Validate(ctxBg)
 	assert.Equal(t, 0, len(errs))
 
 	aSlice = []string{"a", "b"}
-	errs = Required(&aSlice).Exec()
+	errs = Required(&aSlice).Validate(ctxBg)
 	assert.Equal(t, 0, len(errs))
 
 	aMap = map[int]bool{0: false}
-	errs = Required(&aMap).Exec()
+	errs = Required(&aMap).Validate(ctxBg)
 	assert.Equal(t, 0, len(errs))
 
 	aAny = aSlice
-	errs = Required(&aAny).Exec()
+	errs = Required(&aAny).Validate(ctxBg)
 	assert.Equal(t, 0, len(errs))
 }
