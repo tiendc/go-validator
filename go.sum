@@ -15,8 +15,8 @@ github.com/stretchr/testify v1.9.0 h1:HtqpIVDClZ4nwg75+f6Lvsy/wHu+3BoSGCbBAcpTsT
 github.com/stretchr/testify v1.9.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
 github.com/tiendc/go-rflutil v0.0.0-20231112145832-693b7b74d697 h1:BYWZUvxBkpnlC4MywWhO1bEch5L6cCc0t5FNVSUjZps=
 github.com/tiendc/go-rflutil v0.0.0-20231112145832-693b7b74d697/go.mod h1:nSMBac9C+G4b8nvxSgPZ0rmhrLonJ5ZdknynSKxQhL8=
-github.com/tiendc/gofn v1.9.0 h1:gW7wfY/YI9CCEa6l55ic6Rov/hz8T+wIu7/bzkkJ0Uo=
-github.com/tiendc/gofn v1.9.0/go.mod h1:uevHlES37QrasSvoZxBUcooejk7QfvBCfrJ809b+giA=
+github.com/tiendc/gofn v1.11.0 h1:rjXJ2tZ6L96ICwBkbVv0ubDOvrGRo1QMXhhq90xZTBw=
+github.com/tiendc/gofn v1.11.0/go.mod h1:uevHlES37QrasSvoZxBUcooejk7QfvBCfrJ809b+giA=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=

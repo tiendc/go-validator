@@ -28,7 +28,7 @@ func NotNil[T any](v *T) (bool, []base.ErrorParam) {
 //   - empty slice, array, map, channel
 //   - pointer points to zero value
 func Required(v any) (bool, []base.ErrorParam) {
-	if v == nil || gofn.FirstTrue(nil, v) == nil {
+	if v == nil || gofn.FirstNonEmpty(nil, v) == nil {
 		return false, nil
 	}
 	return true, nil

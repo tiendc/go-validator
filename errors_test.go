@@ -45,7 +45,7 @@ func Test_ErrorMod(t *testing.T) {
 	assert.Equal(t, "slice", err.TypedParamFormatter().Format("k", []int{123}))
 	assert.Equal(t, "map", err.TypedParamFormatter().Format("k", map[string]any{}))
 	assert.Equal(t, "struct", err.TypedParamFormatter().Format("k", struct{}{}))
-	assert.Equal(t, "ptr", err.TypedParamFormatter().Format("k", gofn.New(123)))
+	assert.Equal(t, "ptr", err.TypedParamFormatter().Format("k", gofn.ToPtr(123)))
 	assert.Equal(t, "custom", err.TypedParamFormatter().Format("k", func() {}))
 
 	defer func() {

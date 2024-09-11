@@ -32,12 +32,12 @@ func Test_Nil_NotNil(t *testing.T) {
 	assert.True(t, len(errsNil) == 0 && len(errsNotNil) == 1)
 
 	// Failure cases
-	errsNil = Nil(gofn.New[any]("")).Validate(ctxBg)
-	errsNotNil = NotNil(gofn.New[any]("")).Validate(ctxBg)
+	errsNil = Nil(gofn.ToPtr[any]("")).Validate(ctxBg)
+	errsNotNil = NotNil(gofn.ToPtr[any]("")).Validate(ctxBg)
 	assert.False(t, len(errsNil) == 0 && len(errsNotNil) == 1)
 
-	errsNil = Nil(gofn.New[int](0)).Validate(ctxBg)
-	errsNotNil = NotNil(gofn.New[int](0)).Validate(ctxBg)
+	errsNil = Nil(gofn.ToPtr[int](0)).Validate(ctxBg)
+	errsNotNil = NotNil(gofn.ToPtr[int](0)).Validate(ctxBg)
 	assert.False(t, len(errsNil) == 0 && len(errsNotNil) == 1)
 
 	var aSlice []string
