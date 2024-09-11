@@ -316,7 +316,7 @@ func errorBuildDetail(e Error) (detail string, retErr error) {
 		retErr = multierror.Append(retErr, err)
 	}
 
-	buf := bytes.NewBuffer(make([]byte, 0, 100)) // nolint: gomnd
+	buf := bytes.NewBuffer(make([]byte, 0, 100)) //nolint:mnd
 	err = t.Execute(buf, params)
 	if err != nil {
 		retErr = multierror.Append(retErr, err)
@@ -329,7 +329,7 @@ func errorBuildDetail(e Error) (detail string, retErr error) {
 
 // errorBuildParams builds params of error with inner errors' params handled
 func errorBuildParams(e Error, formatter ErrorParamFormatter) (params ErrorParams, err error) {
-	params = make(ErrorParams, 10) // nolint: gomnd
+	params = make(ErrorParams, 10) //nolint:mnd
 
 	// If there are inner errors, collect all params of them
 	for _, inErr := range e.UnwrapAsErrors() {

@@ -29,12 +29,12 @@ func Test_Nil_NotNil(t *testing.T) {
 	assert.True(t, isNil && !isNotNil)
 
 	// Failure cases
-	isNil, _ = Nil(gofn.New[any](""))
-	isNotNil, _ = NotNil(gofn.New[any](""))
+	isNil, _ = Nil(gofn.ToPtr[any](""))
+	isNotNil, _ = NotNil(gofn.ToPtr[any](""))
 	assert.False(t, isNil && !isNotNil)
 
-	isNil, _ = Nil(gofn.New[int](0))
-	isNotNil, _ = NotNil(gofn.New[int](0))
+	isNil, _ = Nil(gofn.ToPtr[int](0))
+	isNotNil, _ = NotNil(gofn.ToPtr[int](0))
 	assert.False(t, isNil && !isNotNil)
 
 	var aSlice []string
