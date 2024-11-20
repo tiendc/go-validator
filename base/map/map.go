@@ -13,7 +13,7 @@ const (
 )
 
 // Len checks map size must be in a range
-func Len[K comparable, V any](m map[K]V, min, max int) (bool, []base.ErrorParam) {
+func Len[K comparable, V any, M ~map[K]V](m M, min, max int) (bool, []base.ErrorParam) {
 	l := len(m)
 	if min <= l && l <= max {
 		return true, nil
@@ -22,7 +22,7 @@ func Len[K comparable, V any](m map[K]V, min, max int) (bool, []base.ErrorParam)
 }
 
 // KeyIn checks map keys must be in a list
-func KeyIn[K comparable, V any](m map[K]V, vals ...K) (bool, []base.ErrorParam) {
+func KeyIn[K comparable, V any, M ~map[K]V](m M, vals ...K) (bool, []base.ErrorParam) {
 	keys := gofn.MapKeys(m)
 	errIdx := base.IsIn(keys, vals)
 	if errIdx == -1 {
@@ -32,7 +32,7 @@ func KeyIn[K comparable, V any](m map[K]V, vals ...K) (bool, []base.ErrorParam) 
 }
 
 // KeyNotIn checks map keys must be not in a list
-func KeyNotIn[K comparable, V any](m map[K]V, vals ...K) (bool, []base.ErrorParam) {
+func KeyNotIn[K comparable, V any, M ~map[K]V](m M, vals ...K) (bool, []base.ErrorParam) {
 	keys := gofn.MapKeys(m)
 	errIdx := base.IsNotIn(keys, vals)
 	if errIdx == -1 {
@@ -42,7 +42,7 @@ func KeyNotIn[K comparable, V any](m map[K]V, vals ...K) (bool, []base.ErrorPara
 }
 
 // KeyRange checks map keys must be in a range (applies to key type string and number only)
-func KeyRange[K base.Number | base.String, V any](m map[K]V, min, max K) (bool, []base.ErrorParam) {
+func KeyRange[K base.Number | base.String, V any, M ~map[K]V](m M, min, max K) (bool, []base.ErrorParam) {
 	for k := range m {
 		if k < min || k > max {
 			return false, []base.ErrorParam{{Key: kItemKey, Value: k}}
@@ -52,7 +52,7 @@ func KeyRange[K base.Number | base.String, V any](m map[K]V, min, max K) (bool, 
 }
 
 // ValueIn checks map values must be in a list
-func ValueIn[K comparable, V comparable](m map[K]V, vals ...V) (bool, []base.ErrorParam) {
+func ValueIn[K comparable, V comparable, M ~map[K]V](m M, vals ...V) (bool, []base.ErrorParam) {
 	keys, values := getKeysAndValues(m)
 	errIdx := base.IsIn(values, vals)
 	if errIdx == -1 {
@@ -62,7 +62,7 @@ func ValueIn[K comparable, V comparable](m map[K]V, vals ...V) (bool, []base.Err
 }
 
 // ValueNotIn checks map values must be not in a list
-func ValueNotIn[K comparable, V comparable](m map[K]V, vals ...V) (bool, []base.ErrorParam) {
+func ValueNotIn[K comparable, V comparable, M ~map[K]V](m M, vals ...V) (bool, []base.ErrorParam) {
 	keys, values := getKeysAndValues(m)
 	errIdx := base.IsNotIn(values, vals)
 	if errIdx == -1 {
@@ -72,7 +72,7 @@ func ValueNotIn[K comparable, V comparable](m map[K]V, vals ...V) (bool, []base.
 }
 
 // ValueRange checks map values must be in a range (applies to value type string and number only)
-func ValueRange[K comparable, V base.Number | base.String](m map[K]V, min, max V) (bool, []base.ErrorParam) {
+func ValueRange[K comparable, V base.Number | base.String, M ~map[K]V](m M, min, max V) (bool, []base.ErrorParam) {
 	for k, v := range m {
 		if v < min || v > max {
 			return false, []base.ErrorParam{{Key: kItemKey, Value: k}, {Key: kItemValue, Value: v}}
@@ -82,7 +82,7 @@ func ValueRange[K comparable, V base.Number | base.String](m map[K]V, min, max V
 }
 
 // ValueUnique checks map values must be unique
-func ValueUnique[K comparable, V comparable](m map[K]V) (bool, []base.ErrorParam) {
+func ValueUnique[K comparable, V comparable, M ~map[K]V](m M) (bool, []base.ErrorParam) {
 	keys, values := getKeysAndValues(m)
 	errIdx := base.IsUnique(values)
 	if errIdx == -1 {
@@ -91,7 +91,7 @@ func ValueUnique[K comparable, V comparable](m map[K]V) (bool, []base.ErrorParam
 	return false, []base.ErrorParam{{Key: kItemKey, Value: keys[errIdx]}, {Key: kItemValue, Value: values[errIdx]}}
 }
 
-func getKeysAndValues[K comparable, V any](m map[K]V) ([]K, []V) {
+func getKeysAndValues[K comparable, V any, M ~map[K]V](m M) ([]K, []V) {
 	keys := make([]K, 0, len(m))
 	values := make([]V, 0, len(m))
 	for k, v := range m {
