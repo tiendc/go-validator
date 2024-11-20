@@ -8,7 +8,7 @@ import (
 )
 
 func Test_EQ(t *testing.T) {
-	assert.True(t, gofn.Head(EQ[int](nil, nil)))
+	assert.True(t, gofn.Head(EQ[int]([]int(nil), nil)))
 	assert.True(t, gofn.Head(EQ([]int{}, []int{})))
 	assert.True(t, gofn.Head(EQ([]int{1, 2}, []int{1, 2})))
 
@@ -22,7 +22,7 @@ func Test_EQ(t *testing.T) {
 }
 
 func Test_Len(t *testing.T) {
-	assert.True(t, gofn.Head(Len[int](nil, 0, 10)))
+	assert.True(t, gofn.Head(Len[int]([]int(nil), 0, 10)))
 	assert.True(t, gofn.Head(Len([]int{}, 0, 10)))
 	assert.True(t, gofn.Head(Len([]int{1, 2}, 0, 2)))
 
@@ -32,7 +32,7 @@ func Test_Len(t *testing.T) {
 }
 
 func Test_Unique(t *testing.T) {
-	assert.True(t, gofn.Head(Unique[int](nil)))
+	assert.True(t, gofn.Head(Unique[int]([]int(nil))))
 	assert.True(t, gofn.Head(Unique([]int{})))
 	assert.True(t, gofn.Head(Unique([]int{1, 2, 3})))
 
@@ -43,7 +43,7 @@ func Test_Unique(t *testing.T) {
 }
 
 func Test_Sorted(t *testing.T) {
-	assert.True(t, gofn.Head(Sorted[int](nil)))
+	assert.True(t, gofn.Head(Sorted[int]([]int(nil))))
 	assert.True(t, gofn.Head(Sorted([]int{})))
 	assert.True(t, gofn.Head(Sorted([]int{1, 2, 3})))
 
@@ -54,7 +54,7 @@ func Test_Sorted(t *testing.T) {
 }
 
 func Test_SortedDesc(t *testing.T) {
-	assert.True(t, gofn.Head(SortedDesc[int](nil)))
+	assert.True(t, gofn.Head(SortedDesc[int]([]int(nil))))
 	assert.True(t, gofn.Head(SortedDesc([]int{})))
 	assert.True(t, gofn.Head(SortedDesc([]int{3, 2, 0, -1})))
 
@@ -65,7 +65,7 @@ func Test_SortedDesc(t *testing.T) {
 }
 
 func Test_ElemIn(t *testing.T) {
-	assert.True(t, gofn.Head(ElemIn[int](nil, 0, 1, 2)))
+	assert.True(t, gofn.Head(ElemIn[int]([]int(nil), 0, 1, 2)))
 	assert.True(t, gofn.Head(ElemIn([]int{}, 0, 1, 2)))
 	assert.True(t, gofn.Head(ElemIn([]int{1, 2}, 0, 1, 2)))
 
@@ -76,7 +76,7 @@ func Test_ElemIn(t *testing.T) {
 }
 
 func Test_ElemNotIn(t *testing.T) {
-	assert.True(t, gofn.Head(ElemNotIn[int](nil, 0, 1, 2)))
+	assert.True(t, gofn.Head(ElemNotIn[int]([]int(nil), 0, 1, 2)))
 	assert.True(t, gofn.Head(ElemNotIn([]int{}, 0, 1, 2)))
 	assert.True(t, gofn.Head(ElemNotIn([]int{1, 2})))
 	assert.True(t, gofn.Head(ElemNotIn([]int{1, 2}, 0, 3, 4, 5)))
@@ -88,7 +88,7 @@ func Test_ElemNotIn(t *testing.T) {
 }
 
 func Test_ElemRange(t *testing.T) {
-	assert.True(t, gofn.Head(ElemRange[int](nil, 0, 10)))
+	assert.True(t, gofn.Head(ElemRange[int]([]int(nil), 0, 10)))
 	assert.True(t, gofn.Head(ElemRange([]int{}, 0, 10)))
 	assert.True(t, gofn.Head(ElemRange([]int{0, 1, 2, 10}, 0, 10)))
 
