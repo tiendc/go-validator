@@ -8,7 +8,7 @@ import (
 )
 
 func Test_Len(t *testing.T) {
-	assert.True(t, gofn.Head(Len[int, int](nil, 0, 10)))
+	assert.True(t, gofn.Head(Len[int, int](map[int]int(nil), 0, 10)))
 	assert.True(t, gofn.Head(Len(map[int]int{}, 0, 10)))
 	assert.True(t, gofn.Head(Len(map[int]int{1: 1, 2: 2}, 0, 2)))
 
@@ -18,8 +18,8 @@ func Test_Len(t *testing.T) {
 }
 
 func Test_KeyIn(t *testing.T) {
-	assert.True(t, gofn.Head(KeyIn[int, int](nil, 0, 1, 2)))
-	assert.True(t, gofn.Head(KeyIn[int, int](nil)))
+	assert.True(t, gofn.Head(KeyIn[int, int](map[int]int(nil), 0, 1, 2)))
+	assert.True(t, gofn.Head(KeyIn[int, int](map[int]int(nil))))
 	assert.True(t, gofn.Head(KeyIn(map[int]int{}, 0, 1, 2)))
 	assert.True(t, gofn.Head(KeyIn(map[int]int{1: 1, 2: 2}, 0, 1, 2)))
 
@@ -29,8 +29,8 @@ func Test_KeyIn(t *testing.T) {
 }
 
 func Test_KeyNotIn(t *testing.T) {
-	assert.True(t, gofn.Head(KeyNotIn[int, int](nil, 0, 1, 2)))
-	assert.True(t, gofn.Head(KeyNotIn[int, int](nil)))
+	assert.True(t, gofn.Head(KeyNotIn[int, int](map[int]int(nil), 0, 1, 2)))
+	assert.True(t, gofn.Head(KeyNotIn[int, int](map[int]int(nil))))
 	assert.True(t, gofn.Head(KeyNotIn(map[int]int{}, 0, 1, 2)))
 	assert.True(t, gofn.Head(KeyNotIn(map[int]int{1: 1, 2: 2}, 3, 4, 5)))
 
@@ -40,8 +40,8 @@ func Test_KeyNotIn(t *testing.T) {
 }
 
 func Test_KeyRange(t *testing.T) {
-	assert.True(t, gofn.Head(KeyRange[int, int](nil, 0, 10)))
-	assert.True(t, gofn.Head(KeyRange[int, int](nil, 0, 10)))
+	assert.True(t, gofn.Head(KeyRange[int, int](map[int]int(nil), 0, 10)))
+	assert.True(t, gofn.Head(KeyRange[int, int](map[int]int(nil), 0, 10)))
 	assert.True(t, gofn.Head(KeyRange(map[int]int{}, 0, 10)))
 	assert.True(t, gofn.Head(KeyRange(map[int]int{1: 1, 2: 2}, 0, 10)))
 
@@ -51,8 +51,8 @@ func Test_KeyRange(t *testing.T) {
 }
 
 func Test_ValueIn(t *testing.T) {
-	assert.True(t, gofn.Head(ValueIn[int, int](nil, 0, 1, 2)))
-	assert.True(t, gofn.Head(ValueIn[int, int](nil)))
+	assert.True(t, gofn.Head(ValueIn[int, int](map[int]int(nil), 0, 1, 2)))
+	assert.True(t, gofn.Head(ValueIn[int, int](map[int]int(nil))))
 	assert.True(t, gofn.Head(ValueIn(map[int]int{}, 0, 1, 2)))
 	assert.True(t, gofn.Head(ValueIn(map[int]int{1: 1, 2: 2}, 0, 1, 2)))
 
@@ -63,8 +63,8 @@ func Test_ValueIn(t *testing.T) {
 }
 
 func Test_ValueNotIn(t *testing.T) {
-	assert.True(t, gofn.Head(ValueNotIn[int, int](nil, 0, 1, 2)))
-	assert.True(t, gofn.Head(ValueNotIn[int, int](nil)))
+	assert.True(t, gofn.Head(ValueNotIn[int, int](map[int]int(nil), 0, 1, 2)))
+	assert.True(t, gofn.Head(ValueNotIn[int, int](map[int]int(nil))))
 	assert.True(t, gofn.Head(ValueNotIn(map[int]int{}, 0, 1, 2)))
 	assert.True(t, gofn.Head(ValueNotIn(map[int]int{1: 1, 2: 2}, 3, 4, 5)))
 
@@ -75,8 +75,8 @@ func Test_ValueNotIn(t *testing.T) {
 }
 
 func Test_ValueRange(t *testing.T) {
-	assert.True(t, gofn.Head(ValueRange[int, int](nil, 0, 10)))
-	assert.True(t, gofn.Head(ValueRange[int, int](nil, 0, 10)))
+	assert.True(t, gofn.Head(ValueRange[int, int](map[int]int(nil), 0, 10)))
+	assert.True(t, gofn.Head(ValueRange[int, int](map[int]int(nil), 0, 10)))
 	assert.True(t, gofn.Head(ValueRange(map[int]int{}, 0, 10)))
 	assert.True(t, gofn.Head(ValueRange(map[int]int{1: 1, 2: 2}, 0, 10)))
 
@@ -87,8 +87,8 @@ func Test_ValueRange(t *testing.T) {
 }
 
 func Test_ValueUnique(t *testing.T) {
-	assert.True(t, gofn.Head(ValueUnique[int, int](nil)))
-	assert.True(t, gofn.Head(ValueUnique[int, int](nil)))
+	assert.True(t, gofn.Head(ValueUnique[int, int](map[int]int(nil))))
+	assert.True(t, gofn.Head(ValueUnique[int, int](map[int]int(nil))))
 	assert.True(t, gofn.Head(ValueUnique(map[int]int{})))
 	assert.True(t, gofn.Head(ValueUnique(map[int]int{1: 1, 2: 2})))
 
