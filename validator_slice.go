@@ -10,8 +10,8 @@ const (
 )
 
 // Slice allows validating slice elements
-func Slice[T comparable, S ~[]T](s S) SliceContentValidator[T, S] {
-	return NewSliceElemValidator(s)
+func Slice[T any, S ~[]T](s S) SliceContentValidator[T, S] {
+	return NewSliceContentValidator(s)
 }
 
 // SliceLen validates the input slice must have length in the specified range

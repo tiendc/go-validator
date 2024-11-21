@@ -258,8 +258,8 @@ type sliceContentValidator[T any, S ~[]T] struct {
 	elemValidatorFunc func(T, int, ItemValidator)
 }
 
-// NewSliceElemValidator creates a new SliceContentValidator
-func NewSliceElemValidator[T any, S ~[]T](slice S) SliceContentValidator[T, S] {
+// NewSliceContentValidator creates a new SliceContentValidator
+func NewSliceContentValidator[T any, S ~[]T](slice S) SliceContentValidator[T, S] {
 	return &sliceContentValidator[T, S]{slice: slice}
 }
 
