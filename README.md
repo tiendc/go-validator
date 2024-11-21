@@ -28,6 +28,7 @@ go get github.com/tiendc/go-validator
         Rank       string
         WorkEmail  string
         Projects   []string
+        TaskMap    map[string]Task
     }
     var p Person
 
@@ -87,6 +88,16 @@ go get github.com/tiendc/go-validator
                 vld.StrLen(&elem, 10, 30).OnError(
                     vld.SetField(fmt.Sprintf("projects[%d]", index), nil),
                     vld.SetCustomKey("ERR_VLD_PROJECT_NAME_INVALID"),
+                ),
+            )
+        }),
+
+        // Validate map entries
+        vld.Map(p.TaskMap).ForEach(func(k string, v Task, validator ItemValidator) {
+            validator.Validate(
+                vld.StrLen(&v.Name, 10, 30).OnError(
+                    vld.SetField(fmt.Sprintf("taskMap[%s].name", k), nil),
+                    vld.SetCustomKey("ERR_VLD_TASK_NAME_INVALID"),
                 ),
             )
         }),
