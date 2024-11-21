@@ -197,3 +197,90 @@ func (c *multiCondValidator) ValidateWithCond(ctx context.Context) (bool, Errors
 	// No match condition, executes the default ones
 	return false, execValidators(ctx, c.defaultValidators, false)
 }
+
+// ItemValidator validator to collect input validators via its Validate() func
+type ItemValidator interface {
+	Validate(validators ...Validator)
+	Group(validators ...Validator) SingleValidator
+	OneOf(validators ...Validator) SingleValidator
+	ExactOneOf(validators ...Validator) SingleValidator
+	NotOf(validators ...Validator) SingleValidator
+}
+
+// itemValidator implements ItemValidator interface
+type itemValidator struct {
+	ItemValidator
+	validators []Validator
+}
+
+func (iv *itemValidator) Validate(validators ...Validator) {
+	iv.validators = append(iv.validators, validators...)
+}
+
+func (iv *itemValidator) Group(validators ...Validator) SingleValidator {
+	group := Group(validators...)
+	iv.validators = append(iv.validators, group)
+	return group
+}
+
+func (iv *itemValidator) OneOf(validators ...Validator) SingleValidator {
+	oneOf := OneOf(validators...)
+	iv.validators = append(iv.validators, oneOf)
+	return oneOf
+}
+
+func (iv *itemValidator) ExactOneOf(validators ...Validator) SingleValidator {
+	exactOneOf := ExactOneOf(validators...)
+	iv.validators = append(iv.validators, exactOneOf)
+	return exactOneOf
+}
+
+func (iv *itemValidator) NotOf(validators ...Validator) SingleValidator {
+	notOf := NotOf(validators...)
+	iv.validators = append(iv.validators, notOf)
+	return notOf
+}
+
+func (iv *itemValidator) get() []Validator {
+	return iv.validators
+}
+
+// SliceContentValidator validator that validates slice elements
+type SliceContentValidator[T any, S ~[]T] interface {
+	Validator
+	ForEach(fn func(element T, index int, elemValidator ItemValidator)) SliceContentValidator[T, S]
+}
+
+// sliceContentValidator implementation of SliceContentValidator
+type sliceContentValidator[T any, S ~[]T] struct {
+	baseValidator
+	slice             S
+	elemValidatorFunc func(T, int, ItemValidator)
+}
+
+// NewSliceElemValidator creates a new SliceContentValidator
+func NewSliceElemValidator[T any, S ~[]T](slice S) SliceContentValidator[T, S] {
+	return &sliceContentValidator[T, S]{slice: slice}
+}
+
+func (c *sliceContentValidator[T, S]) ForEach(fn func(T, int, ItemValidator)) SliceContentValidator[T, S] {
+	c.elemValidatorFunc = fn
+	return c
+}
+
+func (c *sliceContentValidator[T, S]) OnError(errMods ...ErrorMod) Validator {
+	c.errMods = errMods
+	return c
+}
+
+func (c *sliceContentValidator[T, S]) Validate(ctx context.Context) Errors {
+	if len(c.slice) == 0 {
+		return nil
+	}
+	elemValidator := &itemValidator{}
+	for i, elem := range c.slice {
+		c.elemValidatorFunc(elem, i, elemValidator)
+	}
+	errs := execValidators(ctx, elemValidator.get(), false)
+	return c.applyErrModsWithGrouping(errs)
+}

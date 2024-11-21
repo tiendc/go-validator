@@ -1,6 +1,7 @@
 package validation
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -60,4 +61,84 @@ func Test_SliceElemRange(t *testing.T) {
 
 	errs = SliceElemRange([]int{3, 2, 1}, 1, 2).Validate(ctxBg)
 	assert.Equal(t, "elem_range", errs[0].Type())
+}
+
+func Test_SliceElemValidate(t *testing.T) {
+	t.Run("nil/empty slice", func(t *testing.T) {
+		// Nil slice
+		errs := Slice([]string(nil)).ForEach(func(elem string, index int, validator ItemValidator) {
+			validator.Validate(StrLen(&elem, 1, 10))
+		}).Validate(ctxBg)
+		assert.Equal(t, 0, len(errs))
+
+		// Empty slice
+		errs = Slice([]string{}).ForEach(func(elem string, index int, validator ItemValidator) {
+			validator.Validate(StrLen(&elem, 1, 10))
+		}).Validate(ctxBg)
+		assert.Equal(t, 0, len(errs))
+	})
+
+	t.Run("validate elements", func(t *testing.T) {
+		// Validate element
+		errs := Slice([]int{3, 2, 1}).ForEach(func(elem int, index int, validator ItemValidator) {
+			validator.Validate(
+				NumGTE(&elem, 1),
+			)
+		}).Validate(ctxBg)
+		assert.Equal(t, 0, len(errs))
+
+		// Validate element with errors
+		errs = Slice([]int{3, 2, 1}).ForEach(func(elem int, index int, validator ItemValidator) {
+			validator.Validate(
+				NumGT(&elem, 2).OnError(
+					SetField(fmt.Sprintf("slice[%d]", index), nil),
+					SetCustomKey("ERR_VLD_SLICE_ELEMENT_INVALID"),
+				),
+			)
+		}).OnError().Validate(ctxBg)
+		assert.Equal(t, 2, len(errs))
+		assert.Equal(t, "gt", errs[0].Type())
+		assert.Equal(t, "gt", errs[1].Type())
+	})
+
+	t.Run("validate element with Group", func(t *testing.T) {
+		errs := Slice([]int{3, 2, 1}).ForEach(func(elem int, index int, validator ItemValidator) {
+			validator.Group(
+				NumGTE(&elem, 1),
+				NumLTE(&elem, 2),
+			)
+		}).Validate(ctxBg)
+		assert.Equal(t, 1, len(errs))
+		assert.Equal(t, "group", errs[0].Type())
+	})
+
+	t.Run("validate element with OneOf", func(t *testing.T) {
+		errs := Slice([]int{3, 2, 1}).ForEach(func(elem int, index int, validator ItemValidator) {
+			validator.OneOf(
+				NumLTE(&elem, 2),
+				NumGTE(&elem, 1),
+			)
+		}).Validate(ctxBg)
+		assert.Equal(t, 0, len(errs))
+	})
+
+	t.Run("validate element with ExactOneOf", func(t *testing.T) {
+		errs := Slice([]int{3, 2, 1}).ForEach(func(elem int, index int, validator ItemValidator) {
+			validator.ExactOneOf(
+				NumGTE(&elem, 1),
+				NumLTE(&elem, 2),
+			)
+		}).Validate(ctxBg)
+		assert.Equal(t, 2, len(errs)) // slice[1] and slice[2] not satisfy
+	})
+
+	t.Run("validate element with NotOf", func(t *testing.T) {
+		errs := Slice([]int{3, 2, 1}).ForEach(func(elem int, index int, validator ItemValidator) {
+			validator.NotOf(
+				NumGTE(&elem, 1),
+				NumLTE(&elem, 2),
+			)
+		}).Validate(ctxBg)
+		assert.Equal(t, 3, len(errs))
+	})
 }

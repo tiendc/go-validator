@@ -9,6 +9,11 @@ const (
 	sliceType = "slice"
 )
 
+// Slice allows validating slice elements
+func Slice[T comparable, S ~[]T](s S) SliceContentValidator[T, S] {
+	return NewSliceElemValidator(s)
+}
+
 // SliceLen validates the input slice must have length in the specified range
 func SliceLen[T any, S ~[]T](v S, min, max int) SingleValidator {
 	return call3[S]("len", sliceType, "Min", "Max", sliceFunc.Len[T, S])(v, min, max)
