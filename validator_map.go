@@ -9,6 +9,11 @@ const (
 	mapType = "map"
 )
 
+// Map allows validating every map entry
+func Map[K comparable, V any, M ~map[K]V](m M) MapContentValidator[K, V, M] {
+	return NewMapContentValidator(m)
+}
+
 // MapLen validates the input map must have length in the specified range
 func MapLen[K comparable, V any, M ~map[K]V](m M, min, max int) SingleValidator {
 	return call3[M]("len", mapType, "Min", "Max", mapFunc.Len[K, V, M])(m, min, max)

@@ -284,3 +284,43 @@ func (c *sliceContentValidator[T, S]) Validate(ctx context.Context) Errors {
 	errs := execValidators(ctx, elemValidator.get(), false)
 	return c.applyErrModsWithGrouping(errs)
 }
+
+// MapContentValidator validator that validates map entries
+type MapContentValidator[K comparable, V any, M ~map[K]V] interface {
+	Validator
+	ForEach(fn func(k K, v V, entryValidator ItemValidator)) MapContentValidator[K, V, M]
+}
+
+// mapContentValidator implementation of MapContentValidator
+type mapContentValidator[K comparable, V any, M ~map[K]V] struct {
+	baseValidator
+	mapObj             M
+	entryValidatorFunc func(K, V, ItemValidator)
+}
+
+// NewMapContentValidator creates a new MapContentValidator
+func NewMapContentValidator[K comparable, V any, M ~map[K]V](mapObj M) MapContentValidator[K, V, M] {
+	return &mapContentValidator[K, V, M]{mapObj: mapObj}
+}
+
+func (m *mapContentValidator[K, V, M]) ForEach(fn func(K, V, ItemValidator)) MapContentValidator[K, V, M] {
+	m.entryValidatorFunc = fn
+	return m
+}
+
+func (m *mapContentValidator[K, V, M]) OnError(errMods ...ErrorMod) Validator {
+	m.errMods = errMods
+	return m
+}
+
+func (m *mapContentValidator[K, V, M]) Validate(ctx context.Context) Errors {
+	if len(m.mapObj) == 0 {
+		return nil
+	}
+	entryValidator := &itemValidator{}
+	for k, v := range m.mapObj {
+		m.entryValidatorFunc(k, v, entryValidator)
+	}
+	errs := execValidators(ctx, entryValidator.get(), false)
+	return m.applyErrModsWithGrouping(errs)
+}
