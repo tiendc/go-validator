@@ -81,6 +81,16 @@ go get github.com/tiendc/go-validator
             vld.StrEQ(&p.WorkEmail, ""),
         ),
 
+        // Validate slice elements
+        vld.Slice(p.Projects).ForEach(func(elem int, index int, validator ItemValidator) {
+            validator.Validate(
+                vld.StrLen(&elem, 10, 30).OnError(
+                    vld.SetField(fmt.Sprintf("projects[%d]", index), nil),
+                    vld.SetCustomKey("ERR_VLD_PROJECT_NAME_INVALID"),
+                ),
+            )
+        }),
+
         // OTHER FUNCTIONS
         // Pass if at least one of the validations passes
         vld.OneOf(
