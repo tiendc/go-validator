@@ -26,7 +26,7 @@ func SliceUnique[T comparable, S ~[]T](v S) SingleValidator {
 
 // SliceUniqueBy validates the input slice must contain only unique items
 func SliceUniqueBy[T any, U comparable, S ~[]T](v S, keyFn func(T) U) SingleValidator {
-	return call2[S]("unique", sliceType, "TargetValue", sliceFunc.UniqueBy[T, U, S])(v, keyFn)
+	return call2[S]("unique", sliceType, "KeyFunction", sliceFunc.UniqueBy[T, U, S])(v, keyFn)
 }
 
 // SliceSorted validates the input slice must be sorted in ascending order
@@ -36,7 +36,7 @@ func SliceSorted[T base.Number | base.String, S ~[]T](v S) SingleValidator {
 
 // SliceSortedBy validates the input slice must be sorted in ascending order defined by the key function
 func SliceSortedBy[T any, U base.Number | base.String, S ~[]T](v S, keyFn func(T) U) SingleValidator {
-	return call2[S]("sorted", sliceType, "TargetValue", sliceFunc.SortedBy[T, U, S])(v, keyFn)
+	return call2[S]("sorted", sliceType, "KeyFunction", sliceFunc.SortedBy[T, U, S])(v, keyFn)
 }
 
 // SliceSortedDesc validates the input slice must be sorted in descending order
@@ -46,7 +46,7 @@ func SliceSortedDesc[T base.Number | base.String, S ~[]T](v S) SingleValidator {
 
 // SliceSortedDescBy validates the input slice must be sorted in ascending order defined by the key function
 func SliceSortedDescBy[T any, U base.Number | base.String, S ~[]T](v S, keyFn func(T) U) SingleValidator {
-	return call2[S]("sorted_desc", sliceType, "TargetValue", sliceFunc.SortedDescBy[T, U, S])(v, keyFn)
+	return call2[S]("sorted_desc", sliceType, "KeyFunction", sliceFunc.SortedDescBy[T, U, S])(v, keyFn)
 }
 
 // SliceElemIn validates the input slice must contain items in the specified values
