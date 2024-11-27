@@ -140,6 +140,7 @@ var (
 		// Map
 		"map_len":          `{{.Field}}: number of items must be in range {{.Min}} to {{.Max}}`,
 		"map_has_key":      `{{.Field}}: map must contain keys {{.TargetValue}}`,
+		"map_not_have_key": `{{.Field}}: map must not contain keys {{.TargetValue}}`,
 		"map_key_in":       `{{.Field}}: map keys must be one of {{.TargetValue}}`,
 		"map_key_not_in":   `{{.Field}}: map keys must not be one of {{.TargetValue}}`,
 		"map_key_range":    `{{.Field}}: map keys must be in range {{.Min}} to {{.Max}}`,

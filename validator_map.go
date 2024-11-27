@@ -24,6 +24,11 @@ func MapHasKey[K comparable, V any, M ~map[K]V](m M, keys ...K) SingleValidator 
 	return call2N[M]("has_key", mapType, "TargetValue", mapFunc.HasKey[K, V, M])(m, keys...)
 }
 
+// MapNotHaveKey validates the input map must not have the specified keys
+func MapNotHaveKey[K comparable, V any, M ~map[K]V](m M, keys ...K) SingleValidator {
+	return call2N[M]("not_have_key", mapType, "TargetValue", mapFunc.NotHaveKey[K, V, M])(m, keys...)
+}
+
 // MapKeyIn validates the input map must have keys in the specified values
 func MapKeyIn[K comparable, V any, M ~map[K]V](m M, keys ...K) SingleValidator {
 	return call2N[M]("key_in", mapType, "TargetValue", mapFunc.KeyIn[K, V, M])(m, keys...)
