@@ -42,6 +42,32 @@ func Test_Unique(t *testing.T) {
 		params[1].Key == kItemIndex && params[1].Value == 3)
 }
 
+func Test_UniqueBy(t *testing.T) {
+	assert.True(t, gofn.Head(UniqueBy[int]([]int(nil), func(v int) int { return v })))
+	assert.True(t, gofn.Head(UniqueBy([]int{}, func(v int) int { return v })))
+	assert.True(t, gofn.Head(UniqueBy([]int{1, 2, 3}, func(v int) int { return v })))
+
+	ok, params := UniqueBy([]int{0, 1, 2, 0}, func(v int) int { return v })
+	assert.False(t, ok)
+	assert.True(t, params[0].Key == kItemValue && params[0].Value == 0 &&
+		params[1].Key == kItemIndex && params[1].Value == 3)
+
+	// Custom type
+	type St struct {
+		Key int
+		Val string
+	}
+
+	assert.True(t, gofn.Head(UniqueBy([]St{{1, "1"}, {2, "2"}, {3, "3"}},
+		func(v St) int { return v.Key })))
+
+	ok, params = UniqueBy([]St{{1, "1"}, {2, "2"}, {1, "1"}},
+		func(v St) string { return v.Val })
+	assert.False(t, ok)
+	assert.True(t, params[0].Key == kItemValue && params[0].Value == St{1, "1"} &&
+		params[1].Key == kItemIndex && params[1].Value == 2)
+}
+
 func Test_Sorted(t *testing.T) {
 	assert.True(t, gofn.Head(Sorted[int]([]int(nil))))
 	assert.True(t, gofn.Head(Sorted([]int{})))
