@@ -39,11 +39,27 @@ func Test_SliceSorted(t *testing.T) {
 	assert.Equal(t, "sorted", errs[0].Type())
 }
 
+func Test_SliceSortedBy(t *testing.T) {
+	errs := SliceSortedBy([]any{1, 2, 3}, func(v any) int { return v.(int) }).Validate(ctxBg)
+	assert.Equal(t, 0, len(errs))
+
+	errs = SliceSortedBy([]any{1, 3, 2}, func(v any) int { return v.(int) }).Validate(ctxBg)
+	assert.Equal(t, "sorted", errs[0].Type())
+}
+
 func Test_SliceSortedDesc(t *testing.T) {
 	errs := SliceSortedDesc([]int{3, 2, 1}).Validate(ctxBg)
 	assert.Equal(t, 0, len(errs))
 
 	errs = SliceSortedDesc([]int{3, 2, 3}).Validate(ctxBg)
+	assert.Equal(t, "sorted_desc", errs[0].Type())
+}
+
+func Test_SliceSortedDescBy(t *testing.T) {
+	errs := SliceSortedDescBy([]any{3, 2, 1}, func(v any) int { return v.(int) }).Validate(ctxBg)
+	assert.Equal(t, 0, len(errs))
+
+	errs = SliceSortedDescBy([]any{3, 2, 3}, func(v any) int { return v.(int) }).Validate(ctxBg)
 	assert.Equal(t, "sorted_desc", errs[0].Type())
 }
 
