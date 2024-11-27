@@ -34,9 +34,19 @@ func SliceSorted[T base.Number | base.String, S ~[]T](v S) SingleValidator {
 	return call1[S]("sorted", sliceType, sliceFunc.Sorted[T, S])(v)
 }
 
+// SliceSortedBy validates the input slice must be sorted in ascending order defined by the key function
+func SliceSortedBy[T any, U base.Number | base.String, S ~[]T](v S, keyFn func(T) U) SingleValidator {
+	return call2[S]("sorted", sliceType, "TargetValue", sliceFunc.SortedBy[T, U, S])(v, keyFn)
+}
+
 // SliceSortedDesc validates the input slice must be sorted in descending order
 func SliceSortedDesc[T base.Number | base.String, S ~[]T](v S) SingleValidator {
 	return call1[S]("sorted_desc", sliceType, sliceFunc.SortedDesc[T, S])(v)
+}
+
+// SliceSortedDescBy validates the input slice must be sorted in ascending order defined by the key function
+func SliceSortedDescBy[T any, U base.Number | base.String, S ~[]T](v S, keyFn func(T) U) SingleValidator {
+	return call2[S]("sorted_desc", sliceType, "TargetValue", sliceFunc.SortedDescBy[T, U, S])(v, keyFn)
 }
 
 // SliceElemIn validates the input slice must contain items in the specified values

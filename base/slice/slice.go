@@ -60,12 +60,46 @@ func Sorted[T base.Number | base.String, S ~[]T](s S) (bool, []base.ErrorParam) 
 	return true, nil
 }
 
+// SortedBy checks slice items must be in ascending order defined by the function
+func SortedBy[T any, U base.Number | base.String, S ~[]T](s S, keyFn func(T) U) (bool, []base.ErrorParam) {
+	length := len(s)
+	if length <= 1 {
+		return true, nil
+	}
+	prevVal := keyFn(s[0])
+	for i := 1; i < length; i++ {
+		currVal := keyFn(s[i])
+		if prevVal > currVal {
+			return false, []base.ErrorParam{{Key: kItemValue, Value: s[i]}, {Key: kItemIndex, Value: i}}
+		}
+		prevVal = currVal
+	}
+	return true, nil
+}
+
 // SortedDesc checks slice items must be in descending order
 func SortedDesc[T base.Number | base.String, S ~[]T](s S) (bool, []base.ErrorParam) {
 	for i := 1; i < len(s); i++ {
 		if s[i-1] < s[i] {
 			return false, []base.ErrorParam{{Key: kItemValue, Value: s[i]}, {Key: kItemIndex, Value: i}}
 		}
+	}
+	return true, nil
+}
+
+// SortedDescBy checks slice items must be in descending order defined by the function
+func SortedDescBy[T any, U base.Number | base.String, S ~[]T](s S, keyFn func(T) U) (bool, []base.ErrorParam) {
+	length := len(s)
+	if length <= 1 {
+		return true, nil
+	}
+	prevVal := keyFn(s[0])
+	for i := 1; i < length; i++ {
+		currVal := keyFn(s[i])
+		if prevVal < currVal {
+			return false, []base.ErrorParam{{Key: kItemValue, Value: s[i]}, {Key: kItemIndex, Value: i}}
+		}
+		prevVal = currVal
 	}
 	return true, nil
 }
