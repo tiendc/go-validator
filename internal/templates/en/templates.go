@@ -127,15 +127,17 @@ var (
 		"string_is_e164":                 `{{.Field}} must be a valid E164 phone number`,
 
 		// Slice
-		"slice_len":           `{{.Field}}: number of array items must be in range {{.Min}} to {{.Max}}`,
-		"slice_has_elem":      `{{.Field}}: array must contain values {{.TargetValue}}`,
-		"slice_not_have_elem": `{{.Field}}: array must not contain values {{.TargetValue}}`,
-		"slice_elem_in":       `{{.Field}}: array items must be one of {{.TargetValue}}`,
-		"slice_elem_not_in":   `{{.Field}}: array items must not be one of {{.TargetValue}}`,
-		"slice_elem_range":    `{{.Field}}: array items must be in range {{.Min}} to {{.Max}}`,
-		"slice_unique":        `{{.Field}}: array items must be unique`,
-		"slice_sorted":        `{{.Field}}: array items must be sorted in ascending order`,
-		"slice_sorted_desc":   `{{.Field}}: array items must be sorted in descending order`,
+		"slice_len":              `{{.Field}}: number of array items must be in range {{.Min}} to {{.Max}}`,
+		"slice_has_elem":         `{{.Field}}: array must contain values {{.TargetValue}}`,
+		"slice_has_elem_by":      `{{.Field}}: array must contain values satisfying the specified function`,
+		"slice_not_have_elem":    `{{.Field}}: array must not contain values {{.TargetValue}}`,
+		"slice_not_have_elem_by": `{{.Field}}: array must not contain values satisfying the specified function`,
+		"slice_elem_in":          `{{.Field}}: array items must be one of {{.TargetValue}}`,
+		"slice_elem_not_in":      `{{.Field}}: array items must not be one of {{.TargetValue}}`,
+		"slice_elem_range":       `{{.Field}}: array items must be in range {{.Min}} to {{.Max}}`,
+		"slice_unique":           `{{.Field}}: array items must be unique`,
+		"slice_sorted":           `{{.Field}}: array items must be sorted in ascending order`,
+		"slice_sorted_desc":      `{{.Field}}: array items must be sorted in descending order`,
 
 		// Map
 		"map_len":          `{{.Field}}: number of items must be in range {{.Min}} to {{.Max}}`,

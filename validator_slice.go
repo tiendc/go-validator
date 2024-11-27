@@ -54,9 +54,20 @@ func SliceHasElem[T comparable, S ~[]T](v S, list ...T) SingleValidator {
 	return call2N[S]("has_elem", sliceType, "TargetValue", sliceFunc.HasElem[T, S])(v, list...)
 }
 
+// SliceHasElemBy validates the input slice must contain certain values using custom function
+func SliceHasElemBy[T any, S ~[]T](v S, isExistFn func(T) bool) SingleValidator {
+	return call2[S]("has_elem_by", sliceType, "CheckFunction", sliceFunc.HasElemBy[T, S])(v, isExistFn)
+}
+
 // SliceNotHaveElem validates the input slice must not contain the specified values
 func SliceNotHaveElem[T comparable, S ~[]T](v S, list ...T) SingleValidator {
 	return call2N[S]("not_have_elem", sliceType, "TargetValue", sliceFunc.NotHaveElem[T, S])(v, list...)
+}
+
+// SliceNotHaveElemBy validates the input slice must not contain certain values using custom function
+func SliceNotHaveElemBy[T any, S ~[]T](v S, isExistFn func(T) bool) SingleValidator {
+	return call2[S]("not_have_elem_by", sliceType, "CheckFunction", sliceFunc.NotHaveElemBy[T, S])(
+		v, isExistFn)
 }
 
 // SliceElemIn validates the input slice must contain items in the specified values

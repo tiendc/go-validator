@@ -115,12 +115,32 @@ func HasElem[T comparable, S ~[]T](s S, values ...T) (bool, []base.ErrorParam) {
 	return true, nil
 }
 
+// HasElemBy checks slice must contain values using custom function
+func HasElemBy[T any, S ~[]T](s S, isExistFn func(T) bool) (bool, []base.ErrorParam) {
+	for i := range s {
+		if !isExistFn(s[i]) {
+			return false, []base.ErrorParam{{Key: kItemIndex, Value: i}}
+		}
+	}
+	return true, nil
+}
+
 // NotHaveElem checks slice must not contain the specified values
 func NotHaveElem[T comparable, S ~[]T](s S, values ...T) (bool, []base.ErrorParam) {
 	elemMap := base.ToMap(s)
 	for _, v := range values {
 		if _, exists := elemMap[v]; exists {
 			return false, []base.ErrorParam{{Key: kItemValue, Value: v}}
+		}
+	}
+	return true, nil
+}
+
+// NotHaveElemBy checks slice must not contain values using custom function
+func NotHaveElemBy[T any, S ~[]T](s S, isExistFn func(T) bool) (bool, []base.ErrorParam) {
+	for i := range s {
+		if isExistFn(s[i]) {
+			return false, []base.ErrorParam{{Key: kItemIndex, Value: i}}
 		}
 	}
 	return true, nil
