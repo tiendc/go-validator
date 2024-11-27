@@ -21,6 +21,16 @@ func Len[K comparable, V any, M ~map[K]V](m M, min, max int) (bool, []base.Error
 	return false, []base.ErrorParam{{Key: kLen, Value: l}}
 }
 
+// HasKey checks map contains one or multiple keys
+func HasKey[K comparable, V any, M ~map[K]V](m M, keys ...K) (bool, []base.ErrorParam) {
+	for _, k := range keys {
+		if _, exists := m[k]; !exists {
+			return false, []base.ErrorParam{{Key: kItemKey, Value: k}}
+		}
+	}
+	return true, nil
+}
+
 // KeyIn checks map keys must be in a list
 func KeyIn[K comparable, V any, M ~map[K]V](m M, vals ...K) (bool, []base.ErrorParam) {
 	keys := gofn.MapKeys(m)

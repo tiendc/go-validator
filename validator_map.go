@@ -19,6 +19,11 @@ func MapLen[K comparable, V any, M ~map[K]V](m M, min, max int) SingleValidator 
 	return call3[M]("len", mapType, "Min", "Max", mapFunc.Len[K, V, M])(m, min, max)
 }
 
+// MapHasKey validates the input map must have the specified keys
+func MapHasKey[K comparable, V any, M ~map[K]V](m M, keys ...K) SingleValidator {
+	return call2N[M]("has_key", mapType, "TargetValue", mapFunc.HasKey[K, V, M])(m, keys...)
+}
+
 // MapKeyIn validates the input map must have keys in the specified values
 func MapKeyIn[K comparable, V any, M ~map[K]V](m M, keys ...K) SingleValidator {
 	return call2N[M]("key_in", mapType, "TargetValue", mapFunc.KeyIn[K, V, M])(m, keys...)
