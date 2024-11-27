@@ -148,6 +148,16 @@ func Test_HasElem(t *testing.T) {
 	assert.True(t, params[0].Key == kItemValue && params[0].Value == 3)
 }
 
+func Test_HasElemBy(t *testing.T) {
+	assert.True(t, gofn.Head(HasElemBy[any]([]any(nil), func(v any) bool { return v == 1 })))
+	assert.True(t, gofn.Head(HasElemBy([]any{}, func(v any) bool { return v == 1 })))
+	assert.True(t, gofn.Head(HasElemBy([]any{1, 2}, func(v any) bool { return v == 1 || v == 2 })))
+
+	ok, params := HasElemBy([]any{2, 0, 1, 2}, func(v any) bool { return v == 1 || v == 2 })
+	assert.False(t, ok)
+	assert.True(t, params[0].Key == kItemIndex && params[0].Value == 1)
+}
+
 func Test_NotHaveElem(t *testing.T) {
 	assert.True(t, gofn.Head(NotHaveElem[int]([]int(nil))))
 	assert.True(t, gofn.Head(NotHaveElem([]int{})))
@@ -156,6 +166,16 @@ func Test_NotHaveElem(t *testing.T) {
 	ok, params := NotHaveElem([]int{2, 0, 1, 2}, 3, 4, 0)
 	assert.False(t, ok)
 	assert.True(t, params[0].Key == kItemValue && params[0].Value == 0)
+}
+
+func Test_NotHaveElemBy(t *testing.T) {
+	assert.True(t, gofn.Head(NotHaveElemBy[any]([]any(nil), func(v any) bool { return v == 1 })))
+	assert.True(t, gofn.Head(NotHaveElemBy([]any{}, func(v any) bool { return v == 1 })))
+	assert.True(t, gofn.Head(NotHaveElemBy([]any{1, 2}, func(v any) bool { return v == 3 || v == 4 })))
+
+	ok, params := NotHaveElemBy([]any{2, 0, 1, 2}, func(v any) bool { return v == 1 || v == 2 })
+	assert.False(t, ok)
+	assert.True(t, params[0].Key == kItemIndex && params[0].Value == 0)
 }
 
 func Test_ElemIn(t *testing.T) {

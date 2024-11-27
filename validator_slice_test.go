@@ -71,12 +71,28 @@ func Test_SliceHasElem(t *testing.T) {
 	assert.Equal(t, "has_elem", errs[0].Type())
 }
 
+func Test_SliceHasElemBy(t *testing.T) {
+	errs := SliceHasElemBy([]any{3, 2, 1}, func(v any) bool { return v == 1 || v == 2 || v == 3 }).Validate(ctxBg)
+	assert.Equal(t, 0, len(errs))
+
+	errs = SliceHasElemBy([]any{3, 2, 1}, func(v any) bool { return v == 3 || v == 2 }).Validate(ctxBg)
+	assert.Equal(t, "has_elem_by", errs[0].Type())
+}
+
 func Test_SliceNotHaveElem(t *testing.T) {
 	errs := SliceNotHaveElem([]int{3, 2, 1}, 0, 4, 5).Validate(ctxBg)
 	assert.Equal(t, 0, len(errs))
 
 	errs = SliceNotHaveElem([]int{3, 2, 1}, 4, 5, 2).Validate(ctxBg)
 	assert.Equal(t, "not_have_elem", errs[0].Type())
+}
+
+func Test_SliceNotHaveElemBy(t *testing.T) {
+	errs := SliceNotHaveElemBy([]any{3, 2, 1}, func(v any) bool { return v == 4 || v == 5 }).Validate(ctxBg)
+	assert.Equal(t, 0, len(errs))
+
+	errs = SliceNotHaveElemBy([]any{3, 2, 1}, func(v any) bool { return v == 1 || v == 2 }).Validate(ctxBg)
+	assert.Equal(t, "not_have_elem_by", errs[0].Type())
 }
 
 func Test_SliceElemIn(t *testing.T) {
