@@ -63,6 +63,22 @@ func Test_SliceSortedDescBy(t *testing.T) {
 	assert.Equal(t, "sorted_desc", errs[0].Type())
 }
 
+func Test_SliceHasElem(t *testing.T) {
+	errs := SliceHasElem([]int{3, 2, 1}, 1, 2, 3).Validate(ctxBg)
+	assert.Equal(t, 0, len(errs))
+
+	errs = SliceHasElem([]int{3, 2, 1}, 1, 2, 4).Validate(ctxBg)
+	assert.Equal(t, "has_elem", errs[0].Type())
+}
+
+func Test_SliceNotHaveElem(t *testing.T) {
+	errs := SliceNotHaveElem([]int{3, 2, 1}, 0, 4, 5).Validate(ctxBg)
+	assert.Equal(t, 0, len(errs))
+
+	errs = SliceNotHaveElem([]int{3, 2, 1}, 4, 5, 2).Validate(ctxBg)
+	assert.Equal(t, "not_have_elem", errs[0].Type())
+}
+
 func Test_SliceElemIn(t *testing.T) {
 	errs := SliceElemIn([]int{3, 2, 1}, 1, 2, 3, 4, 5).Validate(ctxBg)
 	assert.Equal(t, 0, len(errs))
