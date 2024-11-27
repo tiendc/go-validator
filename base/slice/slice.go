@@ -104,6 +104,28 @@ func SortedDescBy[T any, U base.Number | base.String, S ~[]T](s S, keyFn func(T)
 	return true, nil
 }
 
+// HasElem checks slice must contain the specified values
+func HasElem[T comparable, S ~[]T](s S, values ...T) (bool, []base.ErrorParam) {
+	elemMap := base.ToMap(s)
+	for _, v := range values {
+		if _, exists := elemMap[v]; !exists {
+			return false, []base.ErrorParam{{Key: kItemValue, Value: v}}
+		}
+	}
+	return true, nil
+}
+
+// NotHaveElem checks slice must not contain the specified values
+func NotHaveElem[T comparable, S ~[]T](s S, values ...T) (bool, []base.ErrorParam) {
+	elemMap := base.ToMap(s)
+	for _, v := range values {
+		if _, exists := elemMap[v]; exists {
+			return false, []base.ErrorParam{{Key: kItemValue, Value: v}}
+		}
+	}
+	return true, nil
+}
+
 // ElemIn checks slice items must be in a list
 func ElemIn[T comparable, S ~[]T](s S, values ...T) (bool, []base.ErrorParam) {
 	errIdx := base.IsIn(s, values)

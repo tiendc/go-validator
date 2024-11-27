@@ -49,6 +49,16 @@ func SliceSortedDescBy[T any, U base.Number | base.String, S ~[]T](v S, keyFn fu
 	return call2[S]("sorted_desc", sliceType, "KeyFunction", sliceFunc.SortedDescBy[T, U, S])(v, keyFn)
 }
 
+// SliceHasElem validates the input slice must contain the specified values
+func SliceHasElem[T comparable, S ~[]T](v S, list ...T) SingleValidator {
+	return call2N[S]("has_elem", sliceType, "TargetValue", sliceFunc.HasElem[T, S])(v, list...)
+}
+
+// SliceNotHaveElem validates the input slice must not contain the specified values
+func SliceNotHaveElem[T comparable, S ~[]T](v S, list ...T) SingleValidator {
+	return call2N[S]("not_have_elem", sliceType, "TargetValue", sliceFunc.NotHaveElem[T, S])(v, list...)
+}
+
 // SliceElemIn validates the input slice must contain items in the specified values
 func SliceElemIn[T comparable, S ~[]T](v S, list ...T) SingleValidator {
 	return call2N[S]("elem_in", sliceType, "TargetValue", sliceFunc.ElemIn[T, S])(v, list...)

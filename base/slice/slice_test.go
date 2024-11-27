@@ -138,6 +138,26 @@ func Test_SortedDescBy(t *testing.T) {
 		params[1].Key == kItemIndex && params[1].Value == 2)
 }
 
+func Test_HasElem(t *testing.T) {
+	assert.True(t, gofn.Head(HasElem[int]([]int(nil))))
+	assert.True(t, gofn.Head(HasElem([]int{})))
+	assert.True(t, gofn.Head(HasElem([]int{1, 2}, 1, 2)))
+
+	ok, params := HasElem([]int{2, 0, 1, 2}, 1, 2, 3)
+	assert.False(t, ok)
+	assert.True(t, params[0].Key == kItemValue && params[0].Value == 3)
+}
+
+func Test_NotHaveElem(t *testing.T) {
+	assert.True(t, gofn.Head(NotHaveElem[int]([]int(nil))))
+	assert.True(t, gofn.Head(NotHaveElem([]int{})))
+	assert.True(t, gofn.Head(NotHaveElem([]int{1, 2}, 0, 3, 4)))
+
+	ok, params := NotHaveElem([]int{2, 0, 1, 2}, 3, 4, 0)
+	assert.False(t, ok)
+	assert.True(t, params[0].Key == kItemValue && params[0].Value == 0)
+}
+
 func Test_ElemIn(t *testing.T) {
 	assert.True(t, gofn.Head(ElemIn[int]([]int(nil), 0, 1, 2)))
 	assert.True(t, gofn.Head(ElemIn([]int{}, 0, 1, 2)))
