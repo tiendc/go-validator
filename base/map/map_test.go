@@ -17,6 +17,20 @@ func Test_Len(t *testing.T) {
 	assert.True(t, params[0].Key == kLen && params[0].Value == 2)
 }
 
+func Test_HasKey(t *testing.T) {
+	assert.True(t, gofn.Head(HasKey[int, int](map[int]int(nil))))
+	assert.True(t, gofn.Head(HasKey(map[int]int{})))
+	assert.True(t, gofn.Head(HasKey(map[int]int{1: 1, 2: 2}, 1, 2, 2, 1)))
+
+	ok, params := HasKey(map[int]int{1: 1, 2: 2}, 3)
+	assert.False(t, ok)
+	assert.True(t, params[0].Key == kItemKey && params[0].Value == 3)
+
+	ok, params = HasKey(map[int]int{1: 1, 2: 2}, 1, 2, 3)
+	assert.False(t, ok)
+	assert.True(t, params[0].Key == kItemKey && params[0].Value == 3)
+}
+
 func Test_KeyIn(t *testing.T) {
 	assert.True(t, gofn.Head(KeyIn[int, int](map[int]int(nil), 0, 1, 2)))
 	assert.True(t, gofn.Head(KeyIn[int, int](map[int]int(nil))))

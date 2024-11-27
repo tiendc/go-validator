@@ -15,6 +15,14 @@ func Test_MapLen(t *testing.T) {
 	assert.Equal(t, "len", errs[0].Type())
 }
 
+func Test_MapHasKey(t *testing.T) {
+	errs := MapHasKey(map[int]int{3: 3, 2: 2, 1: 1}, 1, 2, 3, 3, 2).Validate(ctxBg)
+	assert.Equal(t, 0, len(errs))
+
+	errs = MapHasKey(map[int]int{3: 3, 2: 2, 1: 1}, 1, 2, 3, 4).Validate(ctxBg)
+	assert.Equal(t, "has_key", errs[0].Type())
+}
+
 func Test_MapKeyIn(t *testing.T) {
 	errs := MapKeyIn(map[int]int{3: 3, 2: 2, 1: 1}, 1, 2, 3, 4, 5).Validate(ctxBg)
 	assert.Equal(t, 0, len(errs))
