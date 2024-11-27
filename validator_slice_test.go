@@ -23,6 +23,14 @@ func Test_SliceUnique(t *testing.T) {
 	assert.Equal(t, "unique", errs[0].Type())
 }
 
+func Test_SliceUniqueBy(t *testing.T) {
+	errs := SliceUniqueBy([]any{1, 2, 3}, func(v any) int { return v.(int) }).Validate(ctxBg)
+	assert.Equal(t, 0, len(errs))
+
+	errs = SliceUniqueBy([]any{1, 2, 3, 1}, func(v any) int { return v.(int) }).Validate(ctxBg)
+	assert.Equal(t, "unique", errs[0].Type())
+}
+
 func Test_SliceSorted(t *testing.T) {
 	errs := SliceSorted([]int{1, 2, 3}).Validate(ctxBg)
 	assert.Equal(t, 0, len(errs))

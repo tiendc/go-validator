@@ -41,6 +41,15 @@ func Unique[T comparable, S ~[]T](s S) (bool, []base.ErrorParam) {
 	return false, []base.ErrorParam{{Key: kItemValue, Value: s[errIdx]}, {Key: kItemIndex, Value: errIdx}}
 }
 
+// UniqueBy checks slice items must be unique
+func UniqueBy[T any, U comparable, S ~[]T](s S, keyFn func(T) U) (bool, []base.ErrorParam) {
+	errIdx := base.IsUniqueBy(s, keyFn)
+	if errIdx == -1 {
+		return true, nil
+	}
+	return false, []base.ErrorParam{{Key: kItemValue, Value: s[errIdx]}, {Key: kItemIndex, Value: errIdx}}
+}
+
 // Sorted checks slice items must be in ascending order
 func Sorted[T base.Number | base.String, S ~[]T](s S) (bool, []base.ErrorParam) {
 	for i := 1; i < len(s); i++ {
